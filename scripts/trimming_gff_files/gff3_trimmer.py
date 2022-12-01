@@ -80,7 +80,7 @@ while contador < int(k) + 1:
               >= inferior_limit and contigs_freq[contig] < upper_limit]
     # print(len(classe))
 
-    filename = f'{base_name}_{int(inferior_limit)}-{int(upper_limit)}.gtf'
+    filename = f'{base_name}_{int(inferior_limit)}-{int(upper_limit)}.gff3'
 
     if len(classe) > 0:
         for contig in classe:
