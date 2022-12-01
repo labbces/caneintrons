@@ -14,14 +14,14 @@ args = parser.parse_args()
 
 #fasta = '/home/bia/sugarcane_introns/old_nov30/data/Genomes/GCA_002018215.1_CTBE_SP803280_v1.0_genomic.fna'
 fasta = args.path_to_fasta
-inx = 'genome_inx'
+inx = args.path_to_fasta+'.genome_inx'
 fasta_index = SeqIO.index_db(inx, fasta, 'fasta')
 
 
 # Getting gtf file
 # gtf = pr.read_gtf('/home/bia/sugarcane_introns/gtf_teste_cana.gtf')
 # gtf = pr.read_gtf('/home/bia/sugarcane_introns/old_nov30/2.TrimmingGenomeFile/SP803280_141-151.gtf')
-gtf = args.gtf_input
+gtf = pr.read_gtf(args.gtf_input)
 
 # gtf basic operations
 # print(gtf)
