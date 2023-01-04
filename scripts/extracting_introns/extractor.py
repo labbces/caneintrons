@@ -10,10 +10,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--gtf_input", type=str, required=True)
 parser.add_argument("-f", "--path_to_fasta", type=str, required=True)
 parser.add_argument("-o", "--output", type=str, required=True)
+#parser.add_argument("-x", "--fasta_index", type=str, required=True)
 args = parser.parse_args()
 
 #fasta = '/home/bia/sugarcane_introns/old_nov30/data/Genomes/GCA_002018215.1_CTBE_SP803280_v1.0_genomic.fna'
 fasta = args.path_to_fasta
+#fasta_index = args.fasta_index
 inx = args.path_to_fasta+'.genome_inx'
 fasta_index = SeqIO.index_db(inx, fasta, 'fasta')
 
@@ -47,8 +49,8 @@ with open(f'{filename}_intron.fa', 'w') as intron_file:
         seq_full = fasta_index[seq_id].seq
 
         id_full = f'>{seq_id}.{Start}-{End}-{gene_id}'
-        start = Start - 50
-        end = End + 50
+        start = Start - 200
+        end = End + 200
         intron_seq = seq_full[start:end]
 
         intron_file.write(f'{id_full}\n')
