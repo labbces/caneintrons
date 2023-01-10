@@ -1,0 +1,5 @@
+default-resources: [mem_free=1]
+
+before_running:
+  genomes: ['TEST', 'SECONDTEST']
+  samples: /home/bia/snakego/samples_TEST.csv

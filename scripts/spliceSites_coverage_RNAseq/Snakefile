@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+#
+# Script to automate splice site intron coverage analysis in sugarcane
+#
+# Before running (br):
+# 1) Setup 'config.yaml' 
+# 2) Create 'samples_{genome}.csv' files containing SRA identifiers (e.g SRR5258954,SRR5258955,SRR5258994,SRR5258995)
+# 
+# Basic workflow (bw):
+# 1) Downloading RNAseq data using 'samples_{genome}.csv' (2br)
+# 2) Mapping RNAseq data (1bw) against the genomes (xbr - path to genomes directory) using STAR
+#    generating a BAM/SAM file. Dispose of RNAseq data avoiding excessive memory usage.
+# 3) Removing 'bad junctions' of BAM/SAM file (2bw)(Mapping files) using Porticullis.
+# 4) Converting BAM files (Mapping files) into coverage files using bed tools - coverage. 
+# 5) (Still working in this step... Bed tools intersect)
+#
+
+
+configfile: "config.yaml1"
+import yaml
+import pandas as pd
+
+good_headers = config["software"]["good_headers"]
+
+GENOME = [genome for genome in config['before_running']['genomes']] 
+SAMPLE = pd.read_csv(config['before_running']['samples']) # all SRR data from 1 organism = 1 file
+
+rule all:
+    input:
+        expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
+        expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq", genome=GENOME, sample=SAMPLE),
+        expand("RNAseq_{genome}/stranded/{sample}/aux_info/meta_info.json", genome=GENOME, sample=SAMPLE),
+        expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
+        expand("samples_{genome}.csv", genome=GENOME)
+
+
+rule download_fastq:
+    output:
+        R1 = "RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq",
+        R2 = "RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq"
+    threads: 1
+    resources:
+        mem_free=1
+    params:
+        genotype="{genome}"
+    log:
+        "RNAseq_{genome}/logs/download_fastq/sample.log"
+    shell:
+        """
+        cd RNAseq_{genome}/1_RNAseq_fastq/ && \
+        ffq --ftp {wildcards.sample} | grep -Eo '\"url\": \"[^\"]*\"' | grep -o '\"[^\"]*\"$' | xargs wget && \
+        gzip -dc < {wildcards.sample}_1.fastq.gz > {wildcards.sample}_1.fastq && \
+        gzip -dc < {wildcards.sample}_2.fastq.gz > {wildcards.sample}_2.fastq && \
+        cd -
+        """
