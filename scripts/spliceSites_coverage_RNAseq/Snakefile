@@ -25,8 +25,8 @@ SAMPLE = pd.read_csv(config['before_running']['samples']) # all SRR data from 1 
 
 rule all:
     input:
-        expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
-        expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq", genome=GENOME, sample=SAMPLE),
+        expand("/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
+        expand("/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq", genome=GENOME, sample=SAMPLE),
         #expand("RNAseq_{genome}/stranded/{sample}/aux_info/meta_info.json", genome=GENOME, sample=SAMPLE),
         #expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
         #expand("samples_{genome}.csv", genome=GENOME)
@@ -34,8 +34,8 @@ rule all:
 
 rule download_fastq:
     output:
-        R1 = "RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq",
-        R2 = "RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq"
+        R1 = "/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq",
+        R2 = "/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq"
     threads: 1
     resources:
         mem_free=1

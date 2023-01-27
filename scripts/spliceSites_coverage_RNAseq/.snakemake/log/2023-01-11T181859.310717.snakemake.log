@@ -1,0 +1,28 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 1
+Job stats:
+job               count    min threads    max threads
+--------------  -------  -------------  -------------
+all                   1              1              1
+download_fastq        2              1              1
+total                 3              1              1
+
+Select jobs to execute...
+
+[Wed Jan 11 18:19:04 2023]
+rule download_fastq:
+    output: RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq, RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+    log: RNAseq_TEST/logs/download_fastq/SRR6188822.log
+    jobid: 1
+    reason: Missing output files: RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq, RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+    wildcards: genome=TEST, sample=SRR6188822
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, mem_free=1
+
+
+        cd RNAseq_TEST/1_RNAseq_fastq/ &&         ffq --ftp SRR6188822 | grep -Eo '"url": "[^"]*"' | grep -o '"[^"]*"$' | xargs wget &&         gzip -dc < SRR6188822_1.fastq.gz > SRR6188822_1.fastq &&         gzip -dc < SRR6188822_2.fastq.gz > SRR6188822_2.fastq &&         cd -
+        
+Submitted job 1 with external jobid 'Your job 36429 ("snakejob.download_fastq.1.sh") has been submitted'.
+Terminating processes on user request, this might take some time.
+No --cluster-cancel given. Will exit after finishing currently running jobs.
+Complete log: .snakemake/log/2023-01-11T181859.310717.snakemake.log

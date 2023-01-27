@@ -1,0 +1,8 @@
+Building DAG of jobs...
+MissingInputException in rule all in file /Storage/data1/bia.estevam/Introns_Cana/caneintrons/scripts/spliceSites_coverage_RNAseq/Snakefile, line 26:
+Missing input files for rule all:
+    affected files:
+        /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+        /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188823_2.fastq
+        /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188823_1.fastq
+        /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq

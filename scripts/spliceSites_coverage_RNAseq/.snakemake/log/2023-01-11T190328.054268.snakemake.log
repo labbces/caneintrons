@@ -1,0 +1,41 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 1
+Job stats:
+job               count    min threads    max threads
+--------------  -------  -------------  -------------
+all                   1              1              1
+download_fastq        2              1              1
+total                 3              1              1
+
+Select jobs to execute...
+
+[Wed Jan 11 19:03:32 2023]
+rule download_fastq:
+    output: /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq, /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+    log: RNAseq_TEST/logs/download_fastq/SRR6188822.log
+    jobid: 1
+    reason: Missing output files: /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq, /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+    wildcards: genome=TEST, sample=SRR6188822
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, mem_free=1
+
+
+        cd RNAseq_TEST/1_RNAseq_fastq/ &&         ffq --ftp SRR6188822 | grep -Eo '"url": "[^"]*"' | grep -o '"[^"]*"$' | xargs wget &&         gzip -dc < SRR6188822_1.fastq.gz > SRR6188822_1.fastq &&         gzip -dc < SRR6188822_2.fastq.gz > SRR6188822_2.fastq &&         cd -
+        
+Submitted job 1 with external jobid 'Your job 36430 ("snakejob.download_fastq.1.sh") has been submitted'.
+[Wed Jan 11 19:04:12 2023]
+Error in rule download_fastq:
+    jobid: 1
+    output: /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_1.fastq, /home/bia.estevam/introns_cana/RNAseq/RNAseq_TEST/1_RNAseq_fastq/SRR6188822_2.fastq
+    log: RNAseq_TEST/logs/download_fastq/SRR6188822.log (check log file(s) for error details)
+    shell:
+        
+        cd RNAseq_TEST/1_RNAseq_fastq/ &&         ffq --ftp SRR6188822 | grep -Eo '"url": "[^"]*"' | grep -o '"[^"]*"$' | xargs wget &&         gzip -dc < SRR6188822_1.fastq.gz > SRR6188822_1.fastq &&         gzip -dc < SRR6188822_2.fastq.gz > SRR6188822_2.fastq &&         cd -
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: Your job 36430 ("snakejob.download_fastq.1.sh") has been submitted
+
+Error executing rule download_fastq on cluster (jobid: 1, external: Your job 36430 ("snakejob.download_fastq.1.sh") has been submitted, jobscript: /Storage/data1/bia.estevam/Introns_Cana/caneintrons/scripts/spliceSites_coverage_RNAseq/.snakemake/tmp.rjxycux1/snakejob.download_fastq.1.sh). For error details see the cluster log and the log files of the involved rule(s).
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-01-11T190328.054268.snakemake.log
