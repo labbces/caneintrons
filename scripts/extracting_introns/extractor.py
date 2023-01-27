@@ -4,12 +4,15 @@
 from Bio import SeqIO
 import pyranges as pr
 import argparse
+import pandas as pd
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--gtf_input", type=str, required=True)
 parser.add_argument("-f", "--path_to_fasta", type=str, required=True)
 parser.add_argument("-o", "--output", type=str, required=True)
+parser.add_argument("-c", "--contig_table", type=str, required=True,
+                    help='table with contig IDs and their lengths')
 #parser.add_argument("-x", "--fasta_index", type=str, required=True)
 args = parser.parse_args()
 
@@ -18,6 +21,10 @@ fasta = args.path_to_fasta
 #fasta_index = args.fasta_index
 inx = args.path_to_fasta+'.genome_inx'
 fasta_index = SeqIO.index_db(inx, fasta, 'fasta')
+
+contig_table = args.contig_table
+contig_table_pd = pd.read_csv(contig_table, header=None)
+contig_lengths = dict(zip(contig_table_pd[0], contig_table_pd[1]))
 
 
 # Getting gtf file
@@ -49,9 +56,20 @@ with open(f'{filename}_intron.fa', 'w') as intron_file:
         seq_full = fasta_index[seq_id].seq
 
         id_full = f'>{seq_id}.{Start}-{End}-{gene_id}'
+	
         start = Start - 200
         end = End + 200
+	
+        if start <= 0:
+            start = 1
+            print(id_full)
+        
+        if end >= contig_lengths[seq_id]:
+            end = contig_lengths[seq_id]
+            print(id_full)
+
         intron_seq = seq_full[start:end]
+	
 
         intron_file.write(f'{id_full}\n')
         intron_file.write(f'{intron_seq}\n')
