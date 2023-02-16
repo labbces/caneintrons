@@ -1,5 +1,10 @@
 default-resources: [mem_free=1]
 
 before_running:
-  genomes: ['TEST']
-  samples: /home/bia.estevam/introns_cana/caneintrons/scripts/spliceSites_coverage_RNAseq/samples_TEST.csv
+  genomes: ['GCA_002018215.1_CTBE_SP803280_v1.0_genomic', 'Souza.sc.mlc.cns.sgl.utg.scga7.importdb.reformat']
+  samples: /home/bia.estevam/introns_cana/caneintrons/scripts/spliceSites_coverage_RNAseq/samples_leaf_sugarcane.csv
+
+genomeGenerateRAMlimit:
+  GCA_002018215.1_CTBE_SP803280_v1.0_genomic: 316000000000
+  Souza.sc.mlc.cns.sgl.utg.scga7.importdb.reformat: 316000000000
+

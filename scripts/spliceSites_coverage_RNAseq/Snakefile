@@ -1,53 +1,113 @@
 #!/usr/bin/env python
 #
-# Script to automate splice site intron coverage analysis in sugarcane
+# Script to automate splice site intron coverage analysis in sugarcane (Using STAR SJ file)
 #
 # Before running (br):
-# 1) Setup 'config.yaml' 
+# 1) Setup 'config.yaml'
 # 2) Create 'samples_{genome}.csv' files containing SRA identifiers (e.g SRR5258954,SRR5258955,SRR5258994,SRR5258995)
-# 
-# Basic workflow (bw):
-# 1) Downloading RNAseq data using 'samples_{genome}.csv' (2br)
-# 2) Mapping RNAseq data (1bw) against the genomes (xbr - path to genomes directory) using STAR
-#    generating a BAM/SAM file. Dispose of RNAseq data avoiding excessive memory usage.
-# 3) Removing 'bad junctions' of BAM/SAM file (2bw)(Mapping files) using Porticullis.
-# 4) Converting BAM files (Mapping files) into coverage files using bed tools - coverage. 
-# 5) (Still working on this step... Bed tools intersect)
+# 3) Load modules: miniconda3, Python v 3.7 and STAR/2.7
 #
+# How to run (cluster):
+# snakemake -s Snakefile --cluster "qsub -q all.q -cwd -V -pe smp {threads} -l mem_free={resources.mem_free}G" --jobs 1 --latency-wait 30
+# See submit file for extra info
+#
+# Basic workflow (bw):
+# 1) Downloading RNAseq data using 'samples_{genome}.csv' (2br) as temporary files
+# 2) Create genomes index
+# 3) Mapping RNAseq data (1bw) against the genomes (xbr - path to genomes directory) using STAR
+#    generating Splice Juction file.
+# 4)  Dispose of RNAseq data avoiding excessive memory usage.
 
 
-configfile: "config.yaml1"
-import yaml
 import pandas as pd
+import yaml
+configfile: "config.yaml1"
+fastq_dump = config["software"]["fastq-dump"]
 
-GENOME = [genome for genome in config['before_running']['genomes']] 
-SAMPLE = pd.read_csv(config['before_running']['samples']) # all SRR data from 1 organism = 1 file
+
+GENOME = [genome for genome in config['before_running']['genomes']]
+# all SRR data from 1 organism = 1 file
+SAMPLE = pd.read_csv(config['before_running']['samples'])
 
 rule all:
-    input:
-        expand("/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
-        expand("/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq", genome=GENOME, sample=SAMPLE),
-        #expand("RNAseq_{genome}/stranded/{sample}/aux_info/meta_info.json", genome=GENOME, sample=SAMPLE),
-        #expand("RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq", genome=GENOME, sample=SAMPLE),
-        #expand("samples_{genome}.csv", genome=GENOME)
+    input: expand("RNAseq/All_genomes/3_mapping/{genome}/{genome}_{sample}_SJ.out.tab", genome=GENOME, sample=SAMPLE)	    
 
 
 rule download_fastq:
     output:
-        R1 = "/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_1.fastq",
-        R2 = "/home/bia.estevam/introns_cana/RNAseq/RNAseq_{genome}/1_RNAseq_fastq/{sample}_2.fastq"
-    threads: 1
+        R1 = temp("RNAseq/All_genomes/1_RNAseq_fastq/{sample}_1.fastq.gz"),
+        R2 = temp("RNAseq/All_genomes/1_RNAseq_fastq/{sample}_2.fastq.gz")
+    threads: 5
     resources:
-        mem_free=1
-    params:
-        genome="{genome}"
+        mem_free = 1
     log:
-        "RNAseq_{genome}/logs/download_fastq/{sample}.log"
+        "RNAseq/All_genomes/logs/download_fastq/{sample}.log"
     shell:
         """
-        cd RNAseq_{params.genome}/1_RNAseq_fastq/ && \
-        ffq --ftp {wildcards.sample} | grep -Eo '\"url\": \"[^\"]*\"' | grep -o '\"[^\"]*\"$' | xargs wget && \
-        gzip -dc < {wildcards.sample}_1.fastq.gz > {wildcards.sample}_1.fastq && \
-        gzip -dc < {wildcards.sample}_2.fastq.gz > {wildcards.sample}_2.fastq && \
-        cd -
+        ffq --ftp {wildcards.sample} | grep -Eo '\"url\": \"[^\"]*\"' | grep -o '\"[^\"]*\"$' | xargs wget -P RNAseq/All_genomes/1_RNAseq_fastq && \
+        echo download_done
         """
+
+# ffq --ftp {wildcards.sample} | grep -Eo '\"url\": \"[^\"]*\"' | grep -o '\"[^\"]*\"$' | xargs wget -P RNAseq/All_genomes/1_RNAseq_fastq && \
+# {fastq_dump} --gzip --skip-technical --split-files --outdir RNAseq/All_genomes/1_RNAseq_fastq {wildcards.sample} && \
+
+rule getting_genome_index:
+    output:
+        direct = directory('RNAseq/All_genomes/2_genome_indices/{genome}'),
+        chrLength = 'RNAseq/All_genomes/2_genome_indices/{genome}/chrLength.txt', 
+        chrNameLength = 'RNAseq/All_genomes/2_genome_indices/{genome}/chrNameLength.txt',
+        chrName = 'RNAseq/All_genomes/2_genome_indices/{genome}/chrName.txt',
+        chrStart = 'RNAseq/All_genomes/2_genome_indices/{genome}/chrStart.txt',
+        exonGeTrInfo = 'RNAseq/All_genomes/2_genome_indices/{genome}/exonGeTrInfo.tab',
+        exonInfo = 'RNAseq/All_genomes/2_genome_indices/{genome}/exonInfo.tab',
+        geneInfo = 'RNAseq/All_genomes/2_genome_indices/{genome}/geneInfo.tab',
+        Genome = 'RNAseq/All_genomes/2_genome_indices/{genome}/Genome',
+        genomeParameters = 'RNAseq/All_genomes/2_genome_indices/{genome}/genomeParameters.txt',
+        llog = 'RNAseq/All_genomes/2_genome_indices/{genome}/Log.out',
+        SA = 'RNAseq/All_genomes/2_genome_indices/{genome}/SA',
+        SAindex = 'RNAseq/All_genomes/2_genome_indices/{genome}/SAindex',
+        sjdbInfo = 'RNAseq/All_genomes/2_genome_indices/{genome}/sjdbInfo.txt',
+        sjdbListfromGTF = 'RNAseq/All_genomes/2_genome_indices/{genome}/sjdbList.fromGTF.out.tab',
+        sjdbListOUT = 'RNAseq/All_genomes/2_genome_indices/{genome}/sjdbList.out.tab',
+        transcriptInfo = 'RNAseq/All_genomes/2_genome_indices/{genome}/transcriptInfo.tab'
+    input:
+        genome_fasta = '/home/bia.estevam/introns_cana/data/Genomes/{genome}/{genome}.fna',
+        gtf_file = '/home/bia.estevam/introns_cana/data/GTF/{genome}/{genome}.gtf'
+    threads: 5
+    resources:
+        mem_free = 1
+    log:
+        "RNAseq/All_genomes/logs/getting_genome_index/{genome}.log"
+    shell:
+        """
+	mkdir {output} && \
+        STAR --runThreadN {threads} 
+        --runMode genomeGenerate'
+        --genomeDir {output.direct} 
+        --genomeFastaFiles {input.genome_fasta} 
+        --sjdbGTFfile {input.gtf_file}
+        --limitGenomeGenerateRAM {config[genomeGenerateRAMlimit]["{genome}"]} && \
+	echo index_done
+	"""
+
+
+rule mapping:
+    output:
+        #prefix = "RNAseq/All_genomes/3_mapping/{genome}/{genome}_{sample}_",
+        SJ = "RNAseq/All_genomes/3_mapping/{genome}/{genome}_{sample}_SJ.out.tab"
+    input:
+        genome_directory = 'RNAseq/All_genomes/2_genome_indices/{genome}',
+        R1 = "RNAseq/All_genomes/1_RNAseq_fastq/{sample}_1.fastq.gz",
+        R2 = "RNAseq/All_genomes/1_RNAseq_fastq/{sample}_2.fastq.gz"
+    threads: 8
+    resources:
+        mem_free = 1
+    log:
+        "RNAseq/All_genomes/logs/mapping/{genome}_{sample}.log"
+    shell:
+        """
+        STAR --runThreadN {threads} --genomeDir {input.genome_directory} --outFileNamePrefix RNAseq/All_genomes/3_mapping/{wildcards.genome}/{wildcards.genome}_{wildcards.sample}_  --outSAMtype BAM SortedByCoordinate  --readFilesIn {input.R1} {input.R2} --readFilesCommand zcat && \
+        echo mapping_done 
+        """ 
+
+
