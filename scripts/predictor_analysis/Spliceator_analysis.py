@@ -7,6 +7,7 @@
 # Output: Report of the four objectives
 
 # imports
+import numpy as np
 import matplotlib.pyplot as plt
 import re
 import os
@@ -40,6 +41,9 @@ extra_down = extra + 5  # For 200 extra nucleotides, extra_down is 205
 good_donors = {}
 good_acceptors = {}
 good_introns = {}
+sense_sting_neg = {"don": [], "acce": []}
+sense_sting_pos = {"don": [], "acce": []}
+resume = {"pos": {"don": 0, "acce": 0}, "neg": {"don": 0, "acce": 0}}
 
 ss_table = args.ss_table
 ss_table_pd = pd.read_csv(ss_table, sep='\t', header=None)
@@ -114,6 +118,8 @@ for filename in glob.glob(spliceator_f):
 
                 if strand == "+":
                     if SS_type == "Donor":
+                        resume['pos']["don"] += 1
+                        sense_sting_pos['don'].append(int(position))
                         if intron_start > extra:  # non-border introns
                             if extra_up < int(position) < extra_down:
                                 good_donors[ID] = 1
@@ -137,6 +143,8 @@ for filename in glob.glob(spliceator_f):
                                     # good_introns[ID] = 1
 
                     elif SS_type == "Acceptor":
+                        resume['pos']["acce"] += 1
+                        sense_sting_pos['acce'].append(int(position))
                         if (contig_dict[contig] - intron_end) > extra:  # non-border introns
                             if (intron_containing_seqLength - extra_up) > int(position) > (intron_containing_seqLength - extra_down):
                                 good_acceptors[ID] = 1
@@ -156,39 +164,44 @@ for filename in glob.glob(spliceator_f):
 
                 if strand == "-":
                     if SS_type == "Donor":
+                        resume['neg']["don"] += 1
+                        #print(f'Donor: {position}')
+                        sense_sting_neg['don'].append(int(position))
                         if (intron_end + extra) < contig_dict[contig]:
                             if (extra_up - 10) < int(position) < (extra_down + 10):
                                 good_donors[ID] = 1
                                 if ID in good_acceptors:
                                     if gene_ID not in good_introns:
-                                        print('I have a pair!')
+                                        #print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                         else:  # border intron
-                            if (contig_dict[contig] - (intron_end) + 15) < int(position) < (contig_dict[contig] - (intron_end) - 15):
+                            if (contig_dict[contig] - (intron_end) + 10) < int(position) < (contig_dict[contig] - (intron_end) - 10):
                                 good_donors[ID] = 1
                                 if ID in good_acceptors:
                                     if gene_ID not in good_introns:
-                                        print('I have a pair!')
+                                        #print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                     if SS_type == "Acceptor":
+                        resume['neg']["acce"] += 1
+                        sense_sting_neg['acce'].append(int(position))
                         if intron_start > extra:  # non-border intron
                             if ((intron_containing_seqLength - extra_up) + 10) >= int(position) >= ((intron_containing_seqLength - extra_down) - 10):
                                 good_acceptors[ID] = 1
                                 if ID in good_donors:
                                     if gene_ID not in good_introns:
-                                        print('I have a pair!')
+                                        #print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                         else:  # border intron
-                            if (intron_start - 5) < int(position) < (intron_start + 5):
+                            if (intron_start - 10) < int(position) < (intron_start + 10):
                                 good_acceptors[ID] = 1
                                 if ID in good_donors:
-                                    print('I have a pair!')
+                                    #print('I have a pair!')
                                     if gene_ID not in good_introns:
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
@@ -197,6 +210,8 @@ for filename in glob.glob(spliceator_f):
 # print(good_acceptors)
 # print(good_donors)
 # print(len(good_introns))
+# print(sense_sting_neg)
+print(resume)
 
 # Displaying results
 # getting good introns amount
@@ -239,3 +254,49 @@ plt.xlabel('Introns amount')
 plt.ylabel('Gene amount')
 plt.title('Distribuition of introns per gene on sugarcane')
 plt.savefig(filename)
+
+
+fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(8, 8))
+
+acce_positions = sense_sting_neg['acce']
+acce_positions_sorted = sorted(acce_positions)
+axs[1, 1].hist(acce_positions_sorted, bins=10,
+               range=(150, 400), color='lightpink')
+axs[1, 1].set_xlabel('Posição do Sítio aceitor')
+axs[1, 1].set_ylabel('Quantidade de sítios aceitores')
+axs[1, 1].set_title('Aceitadores Fita - (~300-350)')
+axs[1, 1].set_xticks(np.arange(150, 400, 25))
+# plt.show()
+
+don_positions = sense_sting_neg['don']
+don_positions_sorted = sorted(don_positions)
+axs[1, 0].hist(don_positions_sorted, bins=10,
+               range=(150, 400), color='lightblue')
+axs[1, 0].set_xticks(range(150, 401, 25))
+axs[1, 0].set_xlabel('Posição do Sítio doador')
+axs[1, 0].set_ylabel('Quantidade de sítios doadores')
+axs[1, 0].set_title('Doadores Fita - (~200)')
+# .show()
+
+pos_positions = sense_sting_pos['acce']
+pos_positions_sorted = sorted(pos_positions)
+axs[0, 1].hist(pos_positions_sorted, bins=10,
+               range=(150, 400), color='lightpink')
+axs[0, 1].set_xticks(range(150, 401, 25))
+axs[0, 1].set_xlabel('Posição do Sítio doador')
+axs[0, 1].set_ylabel('Quantidade de sítios aceitadores')
+axs[0, 1].set_title('Aceitadores Fita + (~ 300-350)')
+# .show()
+
+pos_positions = sense_sting_pos['don']
+pos_positions_sorted = sorted(pos_positions)
+axs[0, 0].hist(pos_positions_sorted, bins=10,
+               range=(150, 400), color='lightblue')
+axs[0, 0].set_xticks(range(150, 401, 25))
+axs[0, 0].set_xlabel('Posição do Sítio doador')
+axs[0, 0].set_ylabel('Quantidade de sítios doadores')
+axs[0, 0].set_title('Doadores Fita + (~200)')
+# .show()
+
+plt.tight_layout()
+plt.show()
