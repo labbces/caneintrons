@@ -69,14 +69,14 @@ for filename in glob.glob(spliceator_f):
                 # m = re.match(r'([A-Za0-9.]*)\.([0-9]*)-([0-9]*)\
                 # -([\+\-])-(.*)', ID)
                 m = re.match(
-                    r'([A-Za0-9.]*)\.([0-9]*)-([0-9]*)-(.*)', ID)
+                    r'([A-Za0-9.]*)\.([0-9]*)-([0-9]*)-([\+\-])-(.*)', ID)
 
                 contig = m.group(1)
                 intron_start = int(m.group(2))
                 intron_end = int(m.group(3))
                 # strand_id = (m.group(4))
                 # gene_ID = m.group(5)
-                gene_ID = m.group(4)
+                gene_ID = m.group(5)
                 strand = ss_dict[gene_ID]
                 # print(strand)
 
@@ -157,41 +157,38 @@ for filename in glob.glob(spliceator_f):
                 if strand == "-":
                     if SS_type == "Donor":
                         if (intron_end + extra) < contig_dict[contig]:
-                            if (intron_containing_seqLength - extra_up) > int(position) > (intron_containing_seqLength - extra_down):
-                                print(fields)
+                            if (extra_up - 10) < int(position) < (extra_down + 10):
                                 good_donors[ID] = 1
                                 if ID in good_acceptors:
-                                    print('yey, i have a pair 1')
                                     if gene_ID not in good_introns:
+                                        print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                         else:  # border intron
-                            if (contig_dict[contig] - (intron_end - 5)) > int(position) > (contig_dict[contig] - (intron_end + 5)):
+                            if (contig_dict[contig] - (intron_end) + 15) < int(position) < (contig_dict[contig] - (intron_end) - 15):
                                 good_donors[ID] = 1
                                 if ID in good_acceptors:
-                                    print('yey, i have a pair 2')
                                     if gene_ID not in good_introns:
+                                        print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                     if SS_type == "Acceptor":
                         if intron_start > extra:  # non-border intron
-                            if extra_up < int(position) < extra_down:
-                                print(fields)
+                            if ((intron_containing_seqLength - extra_up) + 10) >= int(position) >= ((intron_containing_seqLength - extra_down) - 10):
                                 good_acceptors[ID] = 1
                                 if ID in good_donors:
-                                    print('yey, i have a pair 3')
                                     if gene_ID not in good_introns:
+                                        print('I have a pair!')
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
                                     # good_introns[ID] = 1
                         else:  # border intron
                             if (intron_start - 5) < int(position) < (intron_start + 5):
                                 good_acceptors[ID] = 1
-                                print(fields)
                                 if ID in good_donors:
-                                    print('yey, i have a pair 4')
+                                    print('I have a pair!')
                                     if gene_ID not in good_introns:
                                         good_introns[gene_ID] = {}
                                     good_introns[gene_ID][ID] = 1
@@ -242,6 +239,3 @@ plt.xlabel('Introns amount')
 plt.ylabel('Gene amount')
 plt.title('Distribuition of introns per gene on sugarcane')
 plt.savefig(filename)
-
-
-# Perguntar para o Felipe como ver a qtde de memória usada e tempo
