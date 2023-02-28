@@ -8,6 +8,7 @@
 # contig_size_data.csv
 
 from Bio import SeqIO
+from Bio.Seq import Seq
 import pyranges as pr
 import argparse
 import pandas as pd
@@ -85,7 +86,8 @@ with open(f'{filename}_intron.fa', 'w') as intron_file:
         if strand == "+":
             intron_seq = intron_seq
         elif strand == "-":
-            intron_seq = intron_seq[::-1]
+            seq = Seq(intron_seq)
+            intron_seq = seq.reverse_complement()
         else:
             print(
                 f'Strand {strand} is not + or - (gene {gene_id} and\
