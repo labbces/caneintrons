@@ -245,7 +245,7 @@ plt.bar(hist.keys(), hist.values(), color='lightgreen')
 plt.xlabel('Introns amount')
 plt.ylabel('Gene amount')
 plt.title('Distribuition of introns per gene on sugarcane')
-plt.savefig(filename)
+# plt.savefig(filename)
 
 # Predicted positions plot]
 filename = args.plots_filename + 'PredictedPositions.png'
@@ -286,8 +286,8 @@ axs[0, 1].set_title('Aceitadores Fita + (~ 300-350)')
 
 # PLus sense donnor
 pos_positions = sense_sting_pos['don']
-pos_positions_sorted = sorted(pos_positions)
-axs[0, 0].hist(pos_positions_sorted, bins=10,
+pos_positions_sorted2 = sorted(pos_positions)
+axs[0, 0].hist(pos_positions_sorted2, bins=10,
                range=(150, 400), color='lightblue')
 axs[0, 0].set_xticks(range(150, 401, 25))
 axs[0, 0].set_xlabel('Posição do Sítio doador')
@@ -296,5 +296,31 @@ axs[0, 0].set_title('Doadores Fita + (~200)')
 # .show()
 
 plt.tight_layout()
-plt.savefig(filename)
+# plt.savefig(filename)
 # plt.show()
+
+plt.figure()
+plt.hist([don_positions_sorted, acce_positions_sorted,
+         pos_positions_sorted2, pos_positions_sorted],
+         color=['lightblue', 'royalblue', 'lightsalmon', 'tomato'], bins=5, range=(150, 400),
+         label=['Donors +', 'Acceptors +', 'Donors -', 'Acceptors -'])
+plt.xticks(range(150, 401, 25))
+plt.xlabel('Posições')
+plt.ylabel('Quantidade de sítios doadores')
+plt.legend()
+plt.show()
+
+
+donors = don_positions_sorted + pos_positions_sorted2
+donors = sorted(donors)
+acceptors = acce_positions_sorted + pos_positions_sorted
+acceptors = sorted(acceptors)
+plt.figure()
+plt.hist([donors, acceptors],
+         color=['royalblue', 'tomato'], bins=5, range=(150, 400),
+         label=['Donors', 'Acceptors'])
+plt.xticks(range(150, 401, 25))
+plt.xlabel('Posições')
+plt.ylabel('Quantidade de sítios doadores')
+plt.legend()
+plt.show()
