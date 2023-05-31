@@ -1,0 +1,3 @@
+KeyError in file /home/bia/sugarcane_introns_local/caneintrons/scripts/spliceSites_coverage_RNAseq/Snakefile, line 25:
+'software'
+  File "/home/bia/sugarcane_introns_local/caneintrons/scripts/spliceSites_coverage_RNAseq/Snakefile", line 25, in <module>

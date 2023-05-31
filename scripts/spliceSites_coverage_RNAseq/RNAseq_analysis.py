@@ -124,6 +124,7 @@ print(f'Well suported introns number: {len(good_reads)}')
 mapped_sum_list = []
 for value in good_reads.values():
     mapped_sum_list.append(value['mapped_sum'])
+print(sum(mapped_sum_list))
 # print(mapped_sum_list)
 
 media = np.mean(mapped_sum_list)
@@ -145,8 +146,8 @@ ax.set_ylabel('Quantidade de Leituras Mapeadas')
 plt.show()
 
 
-print(f'Maximum amount of reads: {max(reads)}')
-print(f'Minimum amount of reads: {min(reads)}')
+print(f'Maximum amount of reads: {max((mapped_sum_list))}')
+print(f'Minimum amount of reads: {min(mapped_sum_list)}')
 
 
 # Saving good SJ in csv file

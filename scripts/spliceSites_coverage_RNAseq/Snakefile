@@ -22,7 +22,7 @@
 import pandas as pd
 import yaml
 configfile: "config.yaml1"
-fastq_dump = config["software"]["fastq-dump"]
+# fastq_dump = config["software"]["fastq-dump"]
 
 
 GENOME = [genome for genome in config['before_running']['genomes']]

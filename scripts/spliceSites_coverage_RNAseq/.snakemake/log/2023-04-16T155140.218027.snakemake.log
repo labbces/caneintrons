@@ -1,0 +1,10 @@
+FileNotFoundError in file /home/bia/sugarcane_introns_local/caneintrons/scripts/spliceSites_coverage_RNAseq/Snakefile, line 30:
+[Errno 2] No such file or directory: '/home/bia.estevam/introns_cana/caneintrons/scripts/spliceSites_coverage_RNAseq/samples_leaf_sugarcane.csv'
+  File "/home/bia/sugarcane_introns_local/caneintrons/scripts/spliceSites_coverage_RNAseq/Snakefile", line 30, in <module>
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/util/_decorators.py", line 211, in wrapper
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/util/_decorators.py", line 331, in wrapper
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 950, in read_csv
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 605, in _read
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1442, in __init__
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1735, in _make_engine
+  File "/home/bia/miniconda3/envs/snakemake/lib/python3.11/site-packages/pandas/io/common.py", line 856, in get_handle

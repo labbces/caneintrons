@@ -1,0 +1,72 @@
+
+
+configfile: "config.yaml1"
+
+starts = ['00', '00']
+ends = ['001', '002']
+
+files = [f'{start}-{end}_CTBE-compFile.txt' for start, end in zip(starts, ends)]
+
+rule all:
+    input:
+        analysis_File = 'CTBE_splice2deep_analysis.txt'
+
+rule run_merge_s2d:
+    input: 
+        donor_ss_file = '/home/bia/sugarcane_introns_local/SP803280_D_{start}-{end}.gtfdonor_intron.fa',
+        acceptor_ss_file = '/home/bia/sugarcane_introns_local/SP803280_D_{start}-{end}.gtfacceptor_intron.fa',
+        donor_s2d_file = '/home/bia/sugarcane_introns_local/splicedeep_DoSS_output_SP803280_D_{start}-{end}.gtfdonor_at_intron.fa.splice2deep',
+        acceptor_s2d_file = '/home/bia/sugarcane_introns_local/splicedeep_AcSS_output_SP803280_D_{start}-{end}.gtfacceptor_at_intron.fa.splice2deep',
+        spliceator_introns_donor = '/home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_acceptor2.fa',
+        spliceator_introns_acceptor = '/home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_donor2.fa',
+        all_introns = '/home/bia/sugarcane_introns_local/data/introns/CTBE_introns/CTBE_All_introns.fa',
+        s2d_output_oriza_donor = '/home/bia/sugarcane_introns_local/splicedeep_DoSS_output_SP803280_D_{start}-{end}.gtfdonor_oriza_intron.fa.splice2deep',
+        s2d_output_oriza_acceptor =  '/home/bia/sugarcane_introns_local/splicedeep_AcSS_output_SP803280_D_{start}-{end}.gtfacceptor_oriza_intron.fa.splice2deep'
+    output: 
+        temp('{start}-{end}_CTBE-compFile.txt')
+    shell:
+        '''
+        python3 -u  "/home/bia/sugarcane_introns_local/merge_splice2deep_2.py" -s {input.donor_ss_file} -f {input.acceptor_ss_file} -d {input.donor_s2d_file} -a {input.acceptor_s2d_file} -p {input.spliceator_introns_donor} -t {input.spliceator_introns_acceptor} -i {input.all_introns} -b {input.s2d_output_oriza_donor} -c {input.s2d_output_oriza_acceptor} >> {output}
+        '''
+
+rule reune: 
+    input:
+        comparison_file = expand(files)
+    output:
+        s2d_analysis = 'CTBE_splice2deep_analysis.txt'
+    shell:
+        'python3 -u /home/bia/sugarcane_introns_local/splice2deep_analysis.py'
+
+
+
+#path2DonorSSfile = config['paths']['path2DonorSSfile']
+#path2AcceptorSSfile = config['paths']['path2AcceptorSSfile']
+#path2DonorS2Dfile = config['paths']['path2DonorS2Dfile']
+#path2AcceptorS2Dfile = config['paths']['path2AcceptorS2Dfile']
+#path2allSPgoodDonors = config['paths']['path2allSPgoodDonors']
+#path2allSPgoodAcceptors = config['paths']['path2allSPgoodAcceptors']
+#path2allSugarcaneIntrons =  config['paths']['path2allSugarcaneIntrons']  # 100-150bp
+
+#divisions_start = config['divisions_start']
+
+# rule all:
+#    input:
+#        good_introns = expand('{output_path}/{genome}_splice2deep_goodIntrons.fasta', genome=GENOME),
+#        good_donors = expand('{output_path}/{genome}_splice2deep_goodDonors.fasta', genome=GENOME),
+#        good_acceptors = expand('{output_path}/{genome}_splice2deep_goodAcceptors.fasta', genome=GENOME),
+#        comparison_file = expand('{output_path}/{genome}_compFile.txt', genome=GENOME)
+
+
+# python3 -u  "/home/bia/sugarcane_introns_local/merge_splice2deep.py" -f /home/bia/sugarcane_introns_local/SP803280_D_13-25.gtfacceptor_intron.fa -d /home/bia/sugarcane_introns_local/data/introns/CTBE_introns_s2d/splicedeep_DoSS_output_SP803280_D_13-25.gtfdonor_intron.fa.splice2deep -a /home/bia/sugarcane_introns_local/data/introns/CTBE_introns_s2d/splicedeep_AcSS_output_SP803280_D_13-25.gtfacceptor_intron.fa.splice2deep -s /home/bia/sugarcane_introns_local/SP803280_D_13-25.gtfdonor_intron.fa -p /home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_donor2.fa -t /home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_acceptor2.fa -i /home/bia/sugarcane_introns_local/data/introns/CTBE_introns/SP803280_D_13-25.gtf_intron.fa
+#python3 -u  "/home/bia/sugarcane_introns_local/merge_splice2deep.py" 
+# -f /home/bia/sugarcane_introns_local/SP803280_D_13-25.gtfacceptor_intron.fa 
+# -d /home/bia/sugarcane_introns_local/data/introns/CTBE_introns_s2d/splicedeep_DoSS_output_SP803280_D_13-25.gtfdonor_intron.fa.splice2deep 
+# -a /home/bia/sugarcane_introns_local/data/introns/CTBE_introns_s2d/splicedeep_AcSS_output_SP803280_D_13-25.gtfacceptor_intron.fa.splice2deep 
+# -s /home/bia/sugarcane_introns_local/SP803280_D_13-25.gtfdonor_intron.fa 
+# -p /home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_donor2.fa 
+# -t /home/bia/sugarcane_introns_local/spliceator_anaysis/BothGenomes_spliceator_acceptor2.fa 
+# -i /home/bia/sugarcane_introns_local/data/introns/CTBE_introns/SP803280_D_13-25.gtf_intron.fa
+
+
+
+

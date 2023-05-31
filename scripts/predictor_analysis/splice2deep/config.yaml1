@@ -1,0 +1,22 @@
+
+default-resources: [mem_free=1]
+
+paths:
+    output_path: ''
+    path2DonorSSfile: '/home/bia/sugarcane_introns_local'
+    path2AcceptorSSfile: 'a'
+
+    path2DonorS2Dfile: 'a'
+    path2AcceptorS2Dfile: 'a'
+
+    path2allSPgoodDonors: 'a'
+    path2allSPgoodAcceptors: 'a'
+
+    path2allSugarcaneIntrons: 'a'
+
+
+genomes:
+    ['SP803280_D']
+
+divisions_start:
+    ['151', '171']
