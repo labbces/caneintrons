@@ -1,11 +1,11 @@
-
-
+# imports
 import pandas as pd
 import re
 import argparse
 import glob
 import os
 
+# Adding variables from terminal 
 parser = argparse.ArgumentParser()
 parser.add_argument("-g", "--good_introns_file", type=str, required=True, help="Path to good introns file")
 parser.add_argument("-s", "--star_output_files", type=str, required=True, help="Path too directory with all SRR star output files")
@@ -17,9 +17,11 @@ star_output_path = args.star_output_files
 filename = args.output_filename
 
 
-
+# Final dict used to construct START analysis file 
 starDF = {'ID': [], 'star_expression': []}
 
+
+# Open and format STAR output columns name 
 # '/home/bia/sugarcane_introns_local/data/RNAseq_output/GCA_CTBE/GCA_002018215.1_CTBE_SP803280_v1.0_genomic_*_SJ.out.tab'
 for starSRRfile in glob.glob(star_output_path):
     df = pd.read_csv(starSRRfile, delimiter='\t', header=None)
@@ -29,20 +31,20 @@ for starSRRfile in glob.glob(star_output_path):
     df_num = df.shape[0]
     print(f'Processing {starSRRfile}... {df_num} records\n')
     k = 0
-
     with open(good_introns_file_, 'r') as good_introns_file:
         for good_intron in good_introns_file:
-            if good_intron.startswith('>'):
+            if good_intron.startswith('>'): #if line is header
                 k += 1
-                print(k)
-                print(good_intron)
+                # print(k)
+                # print(good_intron)
                 header = good_intron.lstrip(">")
+                # Get chrmosome, start coordinate and end coordinate from header
                 m = re.match('>([A-Za-z_.a0-9._]*)\.([0-9]*)-([0-9]*)-([\+\-])-(.*)', good_intron)
                 chr = m.group(1)
                 start = int(m.group(2)) + 1
                 end = int(m.group(3))
 
-            
+                # getting same introns with slitely different coordinates 
                 subdf = df.loc[(df['chromosome'] == chr) & 
                                 (df['start'] >= start - 5) & (df['start'] <= start + 5) &
                                 (df['end'] >= end - 5) & (df['end'] <= end + 5)]
@@ -53,8 +55,10 @@ for starSRRfile in glob.glob(star_output_path):
                     x = 0
                     while x < num_lines:
                         print(f'teste {x}')
+                        # getting total expression value
                         expression = subdf.loc[subdf.index[x], 'uniquely_mapped'] + subdf.loc[subdf.index[x], 'multi_mapped']
 
+                        # adding expression value to final dict 
                         if header not in starDF['ID']:
                             starDF['ID'].append(header)
                             starDF['star_expression'].append(expression)
@@ -64,6 +68,7 @@ for starSRRfile in glob.glob(star_output_path):
                         x += 1
                 df = df.drop(subdf.index)
 
+# converting final dict to final table and saving it as a csv file
 starDF = pd.DataFrame(starDF)
 filename = f'{filename}.STARanalysis.csv'
 starDF.to_csv(filename, index=False)
