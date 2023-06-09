@@ -20,7 +20,7 @@ filename = args.output_filename
 representative_headers = []
 for record in SeqIO.parse(cdhit_representaive_output, "fasta"):
     header = record.id
-    print(header)
+    # print(header)
     representative_headers.append(header)
 
 #df1 = pd.read_csv('/home/bia/sugarcane_introns_local/CTBE.final_table.csv', index_col=0)
