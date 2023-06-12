@@ -79,24 +79,28 @@ df = df.drop(df[df['expression'] < 65].index)
 df['Spliceator_average'] = (df['Spliceator_Donor_Score'] + df['Spliceator_Acceptor_Score']) / 2
 min_value = df['Spliceator_average'].min()
 max_value = df['Spliceator_average'].max()
-
-df['Spliceator_normalize'] = (df['Spliceator_average'] - min_value) / (max_value - min_value)
+df['Spliceator_normalized'] = (df['Spliceator_average'] - min_value) / (max_value - min_value)
 
 min_value = df['IMEter_Athaliana_V2'].min()
 max_value = df['IMEter_Athaliana_V2'].max()
-df['IMEter_Athaliana_V2_normalize'] = (df['IMEter_Athaliana_V2'] - min_value) / (max_value - min_value)
+df['IMEter_Athaliana_V2_normalized'] = (df['IMEter_Athaliana_V2'] - min_value) / (max_value - min_value)
 
 min_value = df['IMEter_Sbicolor_V2'].min()
 max_value = df['IMEter_Sbicolor_V2'].max()
-df['IMEter_Sbicolor_V2_normalize'] = (df['IMEter_Sbicolor_V2'] - min_value) / (max_value - min_value)
+df['IMEter_Sbicolor_V2_normalized'] = (df['IMEter_Sbicolor_V2'] - min_value) / (max_value - min_value)
 
 
 sum = df['expression'].sum()
-crm = (df['expression'] / sum) * (10 ** 6)
-df['STAR_normalize'] = crm.apply(lambda x: np.log10(x))
+cpm = (df['expression'] / sum) * (10 ** 6)
+df['STAR_log10CPM'] = cpm.apply(lambda x: np.log10(x))
+min_value = df['STAR_log10CPM'].min()
+max_value = df['STAR_log10CPM'].max()
+df['STAR_normalized'] = (df['STAR_log10CPM'] - min_value) / (max_value - min_value)
 
 
-df['s'] = (df['IMEter_Sbicolor_V2_normalize'] * 0.325) + (df['STAR_normalize'] * 0.2) + (df['Spliceator_normalize'] * 0.325) + (df['IMEter_Athaliana_V2_normalize'] * 0.12) + (1*0.03)
+df['s'] = (df['IMEter_Sbicolor_V2_normalized'] * 0.325) + (df['STAR_normalized'] * 0.2) + (df['Spliceator_normalized'] * 0.325) + (df['IMEter_Athaliana_V2_normalized'] * 0.12) + (1*0.03)
+#df['s'] = (df['IMEter_Sbicolor_V2_normalized'] * 0.325) + (df['STAR_log10CPM'] * 0.2) + (df['Spliceator_normalized'] * 0.325) + (df['IMEter_Athaliana_V2_normalized'] * 0.12) + (1*0.03)
+
 
 df = df.sort_values('s', ascending=False)
 df = df.reset_index(drop=True)
