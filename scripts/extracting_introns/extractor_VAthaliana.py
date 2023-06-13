@@ -1,6 +1,5 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
-import pyranges as pr
 import argparse
 import pandas as pd
 
