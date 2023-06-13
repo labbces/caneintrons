@@ -26,10 +26,10 @@ with open(f'{filename}_Donor_intron.fa', 'w') as donor_intron_file,  open(f'{fil
         seq_full = fasta_index[chr].seq
         id_full = f'>{chr}.{Start}-{End}-{strand}-{seq_id}'
 
-        donor_start = Start - 35
+        donor_start = Start - 300
         acceptor_start = End - 35
         donor_end = Start + 35
-        acceptor_end = End + 35
+        acceptor_end = End + 300
 
         chr_len = len(seq_full)
 
