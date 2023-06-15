@@ -17,7 +17,7 @@ fasta_index = SeqIO.index_db(inx, fasta, 'fasta')
 infile = args.input
 filename = args.output
 
-df = pd.read_csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/EVENT_INFO-araTha10.tab', sep='\t')
+df = pd.read_csv(infile, sep='\t')
 df = df[df['REF_CO'].notna()]
 df = df['REF_CO']
 print(df)
