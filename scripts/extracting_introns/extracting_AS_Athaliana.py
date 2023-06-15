@@ -25,7 +25,7 @@ print(df)
 coord = df.to_dict()
 coord = list(coord.values())
 
-with open(f'{filename}_Donor_intron.fa', 'w') as donor_intron_file,  open(f'{filename}_Acceptor_intron.fa', 'w') as acceptor_intron_file:
+with open(f'{filename}_Acceptor_as.fa', 'w') as donor_intron_file,  open(f'{filename}_Donor_as.fa', 'w') as acceptor_intron_file:
     for coordenada in coord:
         m = re.match(r'(chr[0-9]*):[0-9]*,([0-9]*)-([0-9]*),[0-9]*:([+/-])', coordenada)
         chr = m.group(1)
