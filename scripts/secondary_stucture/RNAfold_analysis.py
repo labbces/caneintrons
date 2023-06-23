@@ -1,22 +1,35 @@
+import pandas as pd
 import re
+import argparse
 
-infile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.RNAfold'
-outfile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.csv'
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", type=str, required=True,
+                    help='File with Chromosome, start/end coordinates and ID')
+parser.add_argument("-o", "--output", type=str, required=True)
+args = parser.parse_args()
+
+#infile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.RNAfold'
+#outfile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.csv'
+
+infile = args.input
+outfile = args.output
 
 with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
-    outfile.write(f'label,freq,freq1/2,freq2/2,freq1/3,freq2/3,freq3/3,substru,deltaG,Stem_comp\n')
+    outfile.write(
+        f'label,freq,freq1/2,freq2/2,freq1/3,freq2/3,freq3/3,substru,deltaG,Stem_comp\n')
     for line in infile:
         line = line.rstrip('\n')
-        #print(line)
+        # print(line)
         if line.rstrip().endswith(')'):
             struc = line.split(' ', 1)[0]
             deltaG = float(line.split(' ', 1)[1].lstrip('(').rstrip(')'))
-            label = "constitutive" #####
+            label = "constitutive"
 
             # calculando a frequencia geral
             comprim = len(struc)
             freq = (struc.count('(') + struc.count(')'))/comprim
-            
+
             # calculando posição 1/3
             comprim3 = int(comprim/3)
 
@@ -56,34 +69,40 @@ with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
                 stem_comp = semistem_comp/comprim
             else:
                 stem_comp = 0
-            
-            outfile.write(f'{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp}\n')
+
+            outfile.write(
+                f'{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp}\n')
 
 
-
-import pandas as pd
-
-df1 = pd.read_csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/retained_Athaliana_Donor1.csv')
-columns = ['label_d','freq_d','freq1/2_d','freq2/2_d','freq1/3_d','freq2/3_d','freq3/3_d','substru_d','deltaG_d','Stem_comp_d']
+df1 = pd.read_csv(
+    '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/retained_Athaliana_Donor1.csv')
+columns = ['label_d', 'freq_d', 'freq1/2_d', 'freq2/2_d', 'freq1/3_d',
+           'freq2/3_d', 'freq3/3_d', 'substru_d', 'deltaG_d', 'Stem_comp_d']
 df1.columns = columns
 
-df2 = pd.read_csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/retained_Athaliana_Acceptor1.csv')
-columns = ['label_a','freq_a','freq1/2_a','freq2/2_a','freq1/3_a','freq2/3_a','freq3/3_a','substru_a','deltaG_a','Stem_comp_a']
+df2 = pd.read_csv(
+    '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/retained_Athaliana_Acceptor1.csv')
+columns = ['label_a', 'freq_a', 'freq1/2_a', 'freq2/2_a', 'freq1/3_a',
+           'freq2/3_a', 'freq3/3_a', 'substru_a', 'deltaG_a', 'Stem_comp_a']
 df2.columns = columns
-#print(df1)
-#print(df2)
+# print(df1)
+# print(df2)
 
 #df = df1.merge(df2, on=index, how='inner')
 df = df1.join(df2)
 df = df.drop(columns=['label_d', 'label_a'])
 df['label'] = 'retained'
-#print(df)
+# print(df)
 
-df1 = pd.read_csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/balanced_constitutive_donor1.csv')
-columns = ['label_d','freq_d','freq1/2_d','freq2/2_d','freq1/3_d','freq2/3_d','freq3/3_d','substru_d','deltaG_d','Stem_comp_d']
+df1 = pd.read_csv(
+    '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/balanced_constitutive_donor1.csv')
+columns = ['label_d', 'freq_d', 'freq1/2_d', 'freq2/2_d', 'freq1/3_d',
+           'freq2/3_d', 'freq3/3_d', 'substru_d', 'deltaG_d', 'Stem_comp_d']
 df1.columns = columns
-df2 = pd.read_csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/balanced_constitutive_acceptor1.csv')
-columns = ['label_a','freq_a','freq1/2_a','freq2/2_a','freq1/3_a','freq2/3_a','freq3/3_a','substru_a','deltaG_a','Stem_comp_a']
+df2 = pd.read_csv(
+    '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/balanced_constitutive_acceptor1.csv')
+columns = ['label_a', 'freq_a', 'freq1/2_a', 'freq2/2_a', 'freq1/3_a',
+           'freq2/3_a', 'freq3/3_a', 'substru_a', 'deltaG_a', 'Stem_comp_a']
 df2.columns = columns
 print(df1)
 print(df2)
@@ -102,4 +121,3 @@ print(df_final)
 df_final.to_csv(f'full_balanced_Athaliana.csv', index=False)
 df.to_csv(f'retained_balanced_Athaliana.csv', index=False)
 dff.to_csv(f'constitutive_balanced_Athaliana.csv', index=False)
-

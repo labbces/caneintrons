@@ -33,6 +33,13 @@ t.test(CI_acceptor$freq, RI_acceptor$freq)
 # Paired nucleotides frequency for donor and acceptor 1/2
 t.test(CI_donor$freq1.2, RI_donor$freq1.2) 
 t.test(CI_acceptor$freq1.2, RI_acceptor$freq1.2) 
+
+t.test(CI_donor$freq1.2, CI_donor$freq2.2) 
+t.test(CI_acceptor$freq1.2, CI_acceptor$freq2.2) 
+
+t.test(RI_donor$freq1.2, RI_donor$freq2.2) 
+t.test(RI_acceptor$freq1.2, RI_acceptor$freq2.2) 
+
 # Paired nucleotides frequency for donor and acceptor 2/2
 t.test(CI_donor$freq2.2, RI_donor$freq2.2) 
 t.test(CI_acceptor$freq2.2, RI_acceptor$freq2.2) 

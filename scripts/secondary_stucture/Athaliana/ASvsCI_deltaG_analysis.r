@@ -13,7 +13,6 @@ CI_acceptor = read.csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athalian
 AS_acceptor = read.csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/as_Athaliana_Acceptor.csv')
 
 
-
 ### Generating histograms ###
 # AS - Donor
 ggplot(AS_donor, aes(x=deltaG, fill=label)) +
@@ -43,6 +42,6 @@ ggplot(data1, aes(x=deltaG, color=label,fill=label)) +
   labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 data2 = read.csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/asci_Athaliana_acceptor.csv')
-ggplot(data1, aes(x=deltaG, color=label,fill=label)) +
+ggplot(data2, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
   labs(title="Stability distributions - Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
