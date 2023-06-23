@@ -1,46 +1,119 @@
+import re
 from Bio import SeqIO
 from Bio.Seq import Seq
-import argparse
-import pandas as pd
 
+fasta = '/home/bia/sugarcane_introns_local/data/Genomas/Athaliana_whole_genome.fa'
+pastDB = '/home/bia/sugarcane_introns_local/data/Athaliana_genome/EVENT_INFO-araTha10.tab'
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type=str, required=True, help='File with Chromosome, start/end coordinates and ID')
-parser.add_argument("-f", "--path_to_fasta", type=str, required=True)
-parser.add_argument("-o", "--output", type=str, required=True)
-args = parser.parse_args()
-
-fasta = args.path_to_fasta
-inx = args.path_to_fasta+'.genome_inx'
+inx = fasta+'.genome_inx'
 fasta_index = SeqIO.index_db(inx, fasta, 'fasta')
-infile = args.input
-filename = args.output
 
-with open(f'{filename}_Donor_intron.fa', 'w') as donor_intron_file,  open(f'{filename}_Acceptor_intron.fa', 'w') as acceptor_intron_file, open(infile, 'r') as infile:
-    for line in infile:
-        chr, Start, End, strand, seq_id = line.split('\t')
 
-        Start = int(Start)
-        End = int(End)
-     
-        seq_full = fasta_index[chr].seq
-        id_full = f'>{chr}.{Start}-{End}-{strand}-{seq_id}'
+def extract(seq_full, start, end, strand, neg_effect):
+    if strand == "+":
+        seq = seq_full[start:end].upper()
+    elif strand == "-":
+        seq = seq_full[(start + neg_effect):(end + neg_effect)].upper()
+        seq = Seq(seq)
+        seq = seq.reverse_complement()
+    return seq
 
-        donor_start = Start - 300
-        acceptor_start = End - 35
-        donor_end = Start + 35
-        acceptor_end = End + 300
 
-        chr_len = len(seq_full)
+with open(pastDB, 'r') as pastDB, open('outfile.fa', 'w') as outfasta:
+    with open('INT_donor.fa', 'w') as intD, open('INT_acceptor.fa', 'w') as intA:
+        for line in pastDB:
+            id = line.split('\t')[1]
+            full_co = line.split('\t')[4]
+            '''if "EX" in id:
+                m = re.match(r'(chr[0-9]*):([0-9]*),([0-9+]*)-([0-9+]*),([0-9]*)', full_co)
+                if m:
+                    chr = m.group(1)
+                    chr = chr.replace('c', 'C')
+                    rec_donor = int(m.group(2))
+                    sk_acceptor = m.group(3).split('+')
+                    sk_acceptor = [int(i) for i in sk_acceptor]
+                    sk_donor = m.group(4).split('+')
+                    sk_donor = [int(i) for i in sk_donor]
+                    rec_acceptor = int(m.group(5))
 
-        if donor_start <= 0 or acceptor_start <= 0:
-            # start = 1
-            print(f'Short start border on {id_full} {Start} {End}')
-        else: 
-            if acceptor_end >= chr_len or donor_end >= chr_len:
-                print(f'Short end border on {id_full}')
-            else:
-                if strand == '+' or strand == '-':
+                    # getting chromosome sequence
+                    seq_full = fasta_index[chr].seq
+                    # print(seq_full)
+                    
+                    # Defining sequence strand
+                    if rec_donor < rec_acceptor:
+                        strand = '+'
+                    else:
+                        strand = '-'
+
+                    # Defining fasta sequences headers
+                    id_full = f'>{id}.-{strand}-{chr}'
+
+                    # Getting coordinates to extract sequences
+                    rec_donor_start = rec_donor - 34
+                    rec_donor_end = rec_donor + 36
+                    rec_donor_seq = extract(seq_full, rec_donor_start, rec_donor_end, strand, 2)
+                    #print(rec_donor_seq)
+
+                    #intD.write(f'{id_full}\n')
+                    #intD.write(f'{rec_donor_seq}\n')
+
+
+                    rec_acceptor_start = rec_donor - 34
+                    rec_acceptor_end = rec_donor + 36
+                    rec_acceptor_seq = extract(seq_full, rec_acceptor_start, rec_acceptor_end, strand, -3)
+                    #print(rec_acceptor_seq)
+
+                    #intA.write(f'{id_full}\n')
+                    #intA.write(f'{rec_acceptor_seq}\n')
+
+                    for acceptor in sk_acceptor:
+                        sk_acceptor_start = acceptor - 34
+                        sk_acceptor_end = acceptor + 36
+                        sk_acceptor_seq = extract(seq_full, rec_acceptor_start, rec_acceptor_end, strand, -3)
+
+                        #intA.write(f'{id_full}\n')
+                        #intA.write(f'{sk_acceptor_seq}\n')
+
+                    for donor in sk_donor:
+                        sk_donor_start = donor - 34
+                        sk_donor_end = donor + 36
+                        sk_donor_seq = extract(seq_full, sk_donor_start, sk_donor_end, strand, 2)
+
+                        #print(sk_donor_seq)
+
+                        #intD.write(f'{id_full}\n')
+                        #intD.write(f'{sk_donor_seq}\n')
+
+
+            if "INT" in id:
+                m = re.match(r'(chr[0-9]*).*-([0-9]*)=([0-9]*)-.*:.*', full_co)
+                if m:
+                    chr = m.group(1)
+                    chr = chr.replace('c', 'C')
+                    start = int(m.group(2))
+                    end = int(m.group(3))
+
+                    # getting chromosome sequence
+                    seq_full = fasta_index[chr].seq
+                    # print(seq_full)
+                    
+                    # Defining sequence strand
+                    if start < end:
+                        strand = '+'
+                    else:
+                        strand = '-'
+
+                    # Defining fasta sequences headers
+                    id_full = f'>{id}.{start}-{end}-{strand}-{chr}'
+
+                    # Getting coordinates to extract sequences
+                    donor_start = start - 34
+                    donor_end =  start + 36
+
+                    acceptor_start = end - 34
+                    acceptor_end =  end + 36
+                    
                     if strand == "+":
                         donor_seq = seq_full[donor_start:donor_end].upper()
                         acceptor_seq = seq_full[acceptor_start:acceptor_end].upper()
@@ -51,11 +124,51 @@ with open(f'{filename}_Donor_intron.fa', 'w') as donor_intron_file,  open(f'{fil
                         donor_seq = donor_seq.reverse_complement()
                         acceptor_seq = Seq(acceptor_seq)
                         acceptor_seq = acceptor_seq.reverse_complement()
+                        # print(acceptor_seq)
+                    
+                    #intD.write(f'{id_full}\n')
+                    #intD.write(f'{donor_seq}\n')
 
-                    donor_intron_file.write(f'{id_full}')
-                    donor_intron_file.write(f'{donor_seq}\n')
+                    #intA.write(f'{id_full}\n')
+                    #intA.write(f'{acceptor_seq}\n')'''
 
-                    acceptor_intron_file.write(f'{id_full}')
-                    acceptor_intron_file.write(f'{acceptor_seq}\n')
-                else:
-                    print(f'Seq not + or - {id_full}')
+            if "ALTD" in id:
+                m = re.match(
+                    r'(chr[0-9]*):[0-9+]*-([0-9+]*),([0-9]*)', full_co)
+                if m:
+                    chr = m.group(1)
+                    chr = chr.replace('c', 'C')
+                    start = m.group(2).split("+")
+                    start = [int(i) for i in start]
+                    acceptor = int(m.group(3))
+
+                    # getting chromosome sequence
+                    seq_full = fasta_index[chr].seq
+                    # print(seq_full)
+
+                    # Defining sequence strand
+                    if start[0] < acceptor:
+                        strand = '+'
+                    else:
+                        strand = '-'
+
+                    # Defining fasta sequences headers
+                    id_full = f'>{id}.{start}-{strand}-{chr}_ALTD'
+
+                    # Getting coordinates to extract sequences
+                    donor_start = start - 34
+                    donor_end = start + 36
+
+                    if strand == "+":
+                        donor_seq = seq_full[donor_start:donor_end].upper()
+                    elif strand == "-":
+                        acceptor_seq = seq_full[donor_start:donor_end].upper()
+                        acceptor_seq = Seq(acceptor_seq)
+                        acceptor_seq = acceptor_seq.reverse_complement()
+                        print(acceptor_seq)
+
+                    # intD.write(f'{id_full}\n')
+                    # intD.write(f'{donor_seq}\n')
+
+                    # intA.write(f'{id_full}\n')
+                    # intA.write(f'{acceptor_seq}\n')

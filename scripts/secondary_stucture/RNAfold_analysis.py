@@ -72,7 +72,7 @@ with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
 
             outfile.write(
                 f'{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp}\n')
-
+'''
 
 df1 = pd.read_csv(
     '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/retained_Athaliana_Donor1.csv')
@@ -121,3 +121,4 @@ print(df_final)
 df_final.to_csv(f'full_balanced_Athaliana.csv', index=False)
 df.to_csv(f'retained_balanced_Athaliana.csv', index=False)
 dff.to_csv(f'constitutive_balanced_Athaliana.csv', index=False)
+'''
