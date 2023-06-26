@@ -1,4 +1,3 @@
-library ('data.table')
 
 # How data files were generated:
 # 1. Extract SS flanking sequences with extractor 

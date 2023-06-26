@@ -5,8 +5,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type=str, required=True,
-                    help='File with Chromosome, start/end coordinates and ID')
+                    help='RNAfold output file')
 parser.add_argument("-o", "--output", type=str, required=True)
+parser.add_argument("-t", "--tag", type=str, required=True)
 args = parser.parse_args()
 
 #infile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.RNAfold'
@@ -24,7 +25,7 @@ with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
         if line.rstrip().endswith(')'):
             struc = line.split(' ', 1)[0]
             deltaG = float(line.split(' ', 1)[1].lstrip('(').rstrip(')'))
-            label = "constitutive"
+            label = args.tag
 
             # calculando a frequencia geral
             comprim = len(struc)
