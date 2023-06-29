@@ -10,6 +10,11 @@ library(ggplot2)
 CI_acceptor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_constitutive_Acceptor.csv')
 CI_donor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_constitutive_Donor.csv')
   
+CI_acceptor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_cons_ALL_constitutive_Acceptor_intron.csv')
+CI_donor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_cons_ALL_constitutive_Donor_intron.csv')
+
+
+
 altFive_acceptor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_altFivePrime_Acceptor_intron.csv')
 altFive_donor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_altFivePrime_Donor_intron.csv')
 
@@ -25,12 +30,12 @@ cassette_donor=read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Hu
 ### Generating histograms ###
 # altFive - Donor
 ggplot(altFive_donor, aes(x=deltaG, fill=label)) +
-  geom_histogram(position="identity", alpha=0.5, fill="pink",color="pink") +
+  geom_histogram(position="identity", alpha=0.7, fill="pink",color="pink") +
   labs(title="Stability distributions - Alternative 5' Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")  +
   xlim(-100, 5)
 # AS - Acceptor
 ggplot(altFive_acceptor, aes(x=deltaG, fill=label)) +
-  geom_histogram(position="identity", alpha=0.5, fill="pink",color="pink") +
+  geom_histogram(position="identity", alpha=0.7, fill="pink",color="pink") +
   labs(title="Stability distributions - Alternative 5' Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")  +
   xlim(-100, 5)
 
@@ -45,65 +50,116 @@ ggplot(altThree_acceptor, aes(x=deltaG, fill=label)) +
   labs(title="Stability distributions - Alternative 3' Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")  +
   xlim(-100, 5)
 
+# Intron retention
+ggplot(retainedIntron_acceptor, aes(x=deltaG, fill=label)) +
+  geom_histogram(position="identity", alpha=0.7, fill="pink",color="pink") +
+  labs(title="Stability distributions - Retained intron Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")  +
+  xlim(-100, 5)
+
+ggplot(retainedIntron_donor, aes(x=deltaG, fill=label)) +
+  geom_histogram(position="identity", alpha=0.7, fill="pink",color="pink") +
+  labs(title="Stability distributions - Retained intron Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")  +
+  xlim(-100, 5)
+
 # Constitutive - Donor
 ggplot(CI_donor, aes(x=deltaG, fill=label)) +
-  geom_histogram(position="identity", alpha=0.5, color="#619CFF") +
-  labs(title="Stability distributions - Constiitutive Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence") +
+  geom_histogram(position="identity", alpha=0.5, color="#619CFF", fill='#619CFF') +
+  labs(title="Stability distributions - Constitutive Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence") +
   xlim(-100, 5)
-# Constitutive - Acceptor
+  # Constitutive - Acceptor
 ggplot(CI_acceptor, aes(x=deltaG, fill=label)) +
-  geom_histogram(position="identity", alpha=0.5, color="#619CFF") +
-  labs(title="Stability distributions - Constiitutive Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  geom_histogram(position="identity", alpha=0.5, color="#619CFF", fill='#619CFF') +
+  labs(title="Stability distributions - Constitutive Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 ### Balanced data AS and CI ###
 CI_balenced_donor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_balanced_constitutive_Donor.csv')
 CI_balenced_acceptor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_balanced_constitutive_Acceptor.csv')
 
+CI_balenced_donor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_cons_ALL_balanced_constitutive_Donor_intron.csv')
+CI_balenced_acceptor = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_cons_ALL_balanced_constitutive_Acceptor_intron.csv')
+
+
 # alternative Five
+CI_altFive_constitutive = rbind(CI_balenced_acceptor, altFive_donor)
+ggplot(CI_altFive_constitutive, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - Constitutive (CS Acceptor vs Alt5 correct)",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+CI_altFive_alternative = rbind(CI_balenced_acceptor, altFive_acceptor)
+ggplot(CI_altFive_alternative, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - Constitutive (CS Acceptor vs Alt5 alternative)",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+
+
+
 CI_altFive_acceptor = rbind(CI_balenced_acceptor, altFive_acceptor)
 ggplot(CI_altFive_acceptor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Alternative 5 x Constitutive donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
-CI_altFive_donor = rbind(CI_balenced_donor, altFive_donor)
+CI_altFive_acceptor = rbind(CI_balenced_acceptor, altFive_donor)
+ggplot(CI_altFive_acceptor, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - Alternative 5 - Donor splice site",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+CI_altFive_donor = rbind(CI_balenced_acceptor, altFive_acceptor)
 ggplot(CI_altFive_donor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
   labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 # alternative Three
-CI_altThree_acceptor = rbind(CI_balenced_acceptor, altThree_acceptor)
-ggplot(CI_altThree_acceptor, aes(x=deltaG, color=label,fill=label)) +
+CI_altThree_constitutive = rbind(CI_balenced_donor, altThree_acceptor)
+ggplot(CI_altThree_constitutive, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Constitutive (CS Donor vs Alt3 correct)",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
-CI_altThree_donor = rbind(CI_balenced_donor, altThree_donor)
+CI_altThree_alternative = rbind(CI_balenced_donor, altThree_donor)
+ggplot(CI_altThree_alternative, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - Alternative (CS Donor vs Alt3 alternative)",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+
+
+CI_altThree_donor = rbind(CI_balenced_acceptor, altThree_donor)
 ggplot(CI_altThree_donor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Alternative 3' - Acceptor Splice site",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+CI_altThree_acceptor = rbind(CI_balenced_donor, altThree_acceptor)
+ggplot(CI_altThree_acceptor, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - CS donor x AltThree acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
+CI_altThree_acceptor = rbind(CI_balenced_donor, altThree_donor)
+ggplot(CI_altThree_acceptor, aes(x=deltaG, color=label,fill=label)) +
+  geom_histogram(position="identity", alpha=0.5) +
+  labs(title="Stability distributions - CS donor x AltThree donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+
 
 # IR
 CI_IR_acceptor = rbind(retainedIntron_acceptor, CI_balenced_acceptor)
 ggplot(CI_IR_acceptor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Intron retention Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 CI_IR_donor = rbind(CI_balenced_donor, retainedIntron_donor)
 ggplot(CI_IR_donor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Intron retention Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 # Cassette
 cassette_acceptor_balanced = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_balanced_cassetteExon_Acceptor_intron.csv')
 CI_cassette_aceptor = rbind(CI_balenced_acceptor, cassette_acceptor_balanced)
 ggplot(CI_cassette_aceptor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Cassette exons - Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 cassette_donor_balanced = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Human_genome/csv/hg18_ALL_balanced_cassetteExon_Donor_intron.csv')
 CI_cassette_donor = rbind(CI_balenced_donor, cassette_donor_balanced)
 ggplot(CI_cassette_donor, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
-  labs(title="Stability distributions - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+  labs(title="Stability distributions - Cassette exon - Donor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
 
 ### All together ### menos o cssette
