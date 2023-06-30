@@ -1,4 +1,3 @@
-library ('data.table')
 library(ggplot2)
 # How data files were generated:
 # 1. Extract SS flanking sequences with extractor 
@@ -45,3 +44,4 @@ data2 = read.csv('/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/perg
 ggplot(data2, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
   labs(title="Stability distributions - Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
+

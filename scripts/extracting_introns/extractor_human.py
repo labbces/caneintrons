@@ -50,8 +50,7 @@ with open(fasta) as handle:
                         )
                     else:
                         acceptor_seq = seq_full[donor_start:donor_end].upper()
-                        donor_seq = seq_full[acceptor_start:acceptor_end].upper(
-                        )
+                        donor_seq = seq_full[acceptor_start:acceptor_end].upper()
                         donor_seq = Seq(donor_seq)
                         donor_seq = donor_seq.reverse_complement()
                         acceptor_seq = Seq(acceptor_seq)
