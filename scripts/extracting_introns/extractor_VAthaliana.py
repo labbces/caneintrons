@@ -183,37 +183,3 @@ with open(fasta) as handle:
 
                             ata.write(f'{id_full}\n')
                             ata.write(f'{seq_ata}\n')
-
-'''
-                            # getting chromosome sequence
-                            seq_full = fasta_index[chr].seq
-                            # print(seq_full)
-
-                            # Defining sequence strand
-                            if start[0] < acceptor:
-                                strand = '+'
-                            else:
-                                strand = '-'
-
-                            # Defining fasta sequences headers
-                            id_full = f'>{id}.{start}-{strand}-{chr}_ALTD'
-
-                            # Getting coordinates to extract sequences
-                            donor_start = start - 34
-                            donor_end = start + 36
-
-                            if strand == "+":
-                                donor_seq = seq_full[donor_start:donor_end].upper(
-                                )
-                            elif strand == "-":
-                                acceptor_seq = seq_full[donor_start:donor_end].upper(
-                                )
-                                acceptor_seq = Seq(acceptor_seq)
-                                acceptor_seq = acceptor_seq.reverse_complement()
-                                print(acceptor_seq)
-
-                            # intD.write(f'{id_full}\n')
-                            # intD.write(f'{donor_seq}\n')
-
-                            # intA.write(f'{id_full}\n')
-                            # intA.write(f'{acceptor_seq}\n')'''
