@@ -43,10 +43,10 @@ with open(fasta) as handle:
 
                     id_full = f'>{chr}.{Start}-{End}-{strand}'
 
-                    donor_start = Start - 69
-                    acceptor_start = End - 69
-                    donor_end = Start + 71
-                    acceptor_end = End + 71
+                    acceptor_start = Start - 69
+                    donor_start = End - 69
+                    acceptor_end = Start + 71
+                    donor_end = End + 71
 
                     if strand == "+":
                         donor_seq = seq_full[donor_start:donor_end].upper()

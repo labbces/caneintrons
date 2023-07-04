@@ -45,3 +45,5 @@ ggplot(data2, aes(x=deltaG, color=label,fill=label)) +
   geom_histogram(position="identity", alpha=0.5) +
   labs(title="Stability distributions - Acceptor",x="Stability of RNA secondary structure (kcals/mol)", y = "Occurence")
 
+### T-TEST ###
+t.test(CI_donor$deltaG, RI_donor$freq1.2) 

@@ -35,6 +35,8 @@ with open(file, "r") as infile:
             continue
         # split the line into a list
         fields = line.split("\t")
+        # check if the genome version is correct
+        # if fields[1].upper().strip() == "TAIR10":
         # check if field[2] is a trranscript
         if fields[2] == "exon":
             strand = fields[6]
