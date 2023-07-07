@@ -60,8 +60,8 @@ with open(fasta) as handle:
                     if "EX" in event:
                         with open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd:
                             # print(full_co, strand)
-                            #sk_exon_c1 = int(c1)
-                            #sk_exon_c2 = int(c2)
+                            c1 = int(float(c1))
+                            c2 = int(float(c2))
 
                             # Defining fasta sequences headers
                             id_full = f'>{id}-{c1}-{c2}-{strand}-chr{chr}-{event}'
@@ -93,8 +93,8 @@ with open(fasta) as handle:
 
                     if "INT" in event:
                         with open(f'{filename}_INT_donor.fa', 'a') as intd, open(f'{filename}_INT_acceptor.fa', 'a') as inta:
-                            c1 = int(c1)
-                            c2 = int(c2)
+                            c1 = int(float(c1))
+                            c2 = int(float(c2))
 
                             # Defining fasta sequences headers
                             id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
@@ -127,7 +127,7 @@ with open(fasta) as handle:
                         with open(f'{filename}_ALTD_donor.fa', 'a') as atd:
                             id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
                             if strand == "+":
-                                c2 = int(c2)
+                                c2 = int(float(c2))
                                 extra_start = c2 - 69
                                 extra_end = c2 + 71
 
@@ -137,7 +137,7 @@ with open(fasta) as handle:
                                 atd.write(f'{id_full}\n')
                                 atd.write(f'{seq_atd}\n')
                             else:  # if strand "-"
-                                c1 = int(c1)
+                                c1 = int(float(c1))
                                 extra_start = c1 - 69
                                 extra_end = c1 + 71
 
@@ -151,7 +151,7 @@ with open(fasta) as handle:
                         with open(f'{filename}_ALTA_acceptor.fa', 'a') as ata:
                             id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
                             if strand == "-":
-                                c2 = int(c2)
+                                c2 = int(float(c2))
                                 extra_start = c2 - 69
                                 extra_end = c2 + 71
 
@@ -161,7 +161,7 @@ with open(fasta) as handle:
                                 ata.write(f'{id_full}\n')
                                 ata.write(f'{seq_atd}\n')
                             else:  # if strand "+"
-                                c1 = int(c1)
+                                c1 = int(float(c1))
                                 extra_start = c1 - 69
                                 extra_end = c1 + 71
 
@@ -172,8 +172,8 @@ with open(fasta) as handle:
                                 ata.write(f'{seq_atd}\n')
 
                     if "CS" in event:  # constitutive splicing
-                        c1 = int(c1)
-                        c2 = int(c2)
+                        c1 = int(float(c1))
+                        c2 = int(float(c2))
                         with open(f'{filename}_CS_donor.fa', 'a') as donor_intron_file,  open(f'{filename}_CS_acceptor.fa', 'a') as acceptor_intron_file:
                             if chr.upper() == cromo:
                                 id_full = f'>chr{chr}.{c1}-{c2}-{strand}'
