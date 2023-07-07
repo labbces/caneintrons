@@ -56,7 +56,7 @@ with open(fasta) as handle:
                 chr = chr.upper()
                 chr = chr.replace('CHR', '')
                 if chr == cromo.upper():
-                    print(f'Sequence {event} being processed...')
+                    print(f'Sequence {id} being processed...')
                     if "EX" in event:
                         with open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd:
                             # print(full_co, strand)
