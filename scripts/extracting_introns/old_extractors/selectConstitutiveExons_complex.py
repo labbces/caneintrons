@@ -38,35 +38,39 @@ with open(file, "r") as infile:
         # check if the genome version is correct
         # if fields[1].upper().strip() == "TAIR10":
         # check if field[2] is a trranscript
-        if fields[2] == "exon":
-            strand = fields[6]
-            ninethfiled = fields[8].split(";")
-            for tag in ninethfiled:
-                # rermove leading spaces
-                tag = tag.strip()
-                if tag.startswith("transcript_id"):
-                    tid = tag.split()[1]
-                elif tag.startswith("gene_id"):
-                    gid = tag.split()[1]
-            if gid not in data:
-                data[gid] = {}
-            if tid not in data[gid]:
-                data[gid][tid] = 0
-            # count the exons
-            exonPositions = str(
-                fields[0]+':'+fields[3]+"-"+fields[4]+":"+strand)
-            exonPositions2 = [fields[0], int(
-                fields[3]), int(fields[4]), strand]
-            exonPos[gid][exonPositions][tid] = 0
-            # check exon overlapping
-            for id, exon in exonPos2[gid][tid].items():
-                if int(fields[3]) <= exon[2]:  # overlap
-                    if len(exonPositions2) == 4:
-                        exonPositions2.append('overlap')
-                    if len(exonPos2[gid][tid][id]) == 4:
-                        exonPos2[gid][tid][id].append('overlap')
-            exonPos2[gid][tid][exonPositions] = exonPositions2
-            data[gid][tid] += 1
+        # print(line)
+        if fields[1] != ".":
+            if fields[2] == "transcript":
+                ninethfiled = fields[8].split(";")
+                for tag in ninethfiled:
+                    # rermove leading spaces
+                    tag = tag.strip()
+                    if "transcript" in tag:
+                        tid = tag.split(':')[1]
+                    elif "gene" in tag:
+                        gid = tag.split(':')[1]
+
+            if fields[2] == "exon":
+                strand = fields[6]
+                if gid not in data:
+                    data[gid] = {}
+                if tid not in data[gid]:
+                    data[gid][tid] = 0
+                # count the exons
+                exonPositions = str(
+                    fields[0]+':'+fields[3]+"-"+fields[4]+":"+strand)
+                exonPositions2 = [fields[0], int(
+                    fields[3]), int(fields[4]), strand]
+                exonPos[gid][exonPositions][tid] = 0
+                # check exon overlapping
+                for id, exon in exonPos2[gid][tid].items():
+                    if int(fields[3]) <= exon[2]:  # overlap
+                        if len(exonPositions2) == 4:
+                            exonPositions2.append('overlap')
+                        if len(exonPos2[gid][tid][id]) == 4:
+                            exonPos2[gid][tid][id].append('overlap')
+                exonPos2[gid][tid][exonPositions] = exonPositions2
+                data[gid][tid] += 1
 
 a = []
 # print('geneID', 'transcriptID', 'coordinate', 'transcript_Amount', 'exons_Amount', sep="\t")
