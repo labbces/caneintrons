@@ -60,15 +60,15 @@ with open(fasta) as handle:
                     if "EX" in event:
                         with open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd:
                             # print(full_co, strand)
-                            sk_exon_c1 = int(c1)
-                            sk_exon_c2 = int(c2)
+                            #sk_exon_c1 = int(c1)
+                            #sk_exon_c2 = int(c2)
 
                             # Defining fasta sequences headers
-                            id_full = f'>{id}-{sk_exon_c1}-{sk_exon_c2}-{strand}-chr{chr}-{event}'
+                            id_full = f'>{id}-{c1}-{c2}-{strand}-chr{chr}-{event}'
 
                             # Getting coordinates to extract sequences
-                            exon_c1_start = sk_exon_c1 - 69
-                            exon_c1_end = sk_exon_c1 + 71
+                            exon_c1_start = c1 - 69
+                            exon_c1_end = c1 + 71
                             C1_end_seq = extract(
                                 seq_full, exon_c1_start, exon_c1_end, strand, 2)
 
@@ -79,8 +79,8 @@ with open(fasta) as handle:
                                 ekd.write(f'{id_full}\n')
                                 ekd.write(f'{C1_end_seq}\n')
 
-                            exon_c2_start = sk_exon_c2 - 69
-                            exon_c2_end = sk_exon_c2 + 71
+                            exon_c2_start = c2 - 69
+                            exon_c2_end = c2 + 71
                             C2_end_seq = extract(
                                 seq_full, exon_c2_start, exon_c2_end, strand, 2)
 
