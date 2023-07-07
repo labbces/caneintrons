@@ -20,7 +20,7 @@ parser.add_argument("-i", "--input", type=str, required=True,
 parser.add_argument("-f", "--path_to_fasta", type=str, required=True)
 parser.add_argument("-o", "--output", type=str, required=True)
 parser.add_argument("-c", "--chromosome", type=str,
-                    required=True, help="no padrão do AS file")
+                    required=True, help="without chr")
 args = parser.parse_args()
 
 # Saving args into variables
@@ -53,7 +53,9 @@ with open(fasta) as handle:
             for line in infile:
                 id, chr, c1, c2, strand, event = line.split(
                     '\t')  # c1 = coordenate 1
-                if chr.upper() == cromo.upper():
+                chr = chr.upper()
+                chr = chr.replace('CHR', '')
+                if chr == cromo.upper():
                     print(f'Sequence {event} being processed...')
                     if "EX" in event:
                         with open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd:
@@ -62,7 +64,7 @@ with open(fasta) as handle:
                             sk_exon_c2 = int(c2)
 
                             # Defining fasta sequences headers
-                            id_full = f'>{id}-{sk_exon_c1}-{sk_exon_c2}-{strand}-{chr}-{event}'
+                            id_full = f'>{id}-{sk_exon_c1}-{sk_exon_c2}-{strand}-chr{chr}-{event}'
 
                             # Getting coordinates to extract sequences
                             exon_c1_start = sk_exon_c1 - 69
@@ -95,7 +97,7 @@ with open(fasta) as handle:
                             c2 = int(c2)
 
                             # Defining fasta sequences headers
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
 
                             # Getting coordinates to extract sequences
                             intron_c1_start = c1 - 69
@@ -123,7 +125,7 @@ with open(fasta) as handle:
 
                     if "ALTD" in event:
                         with open(f'{filename}_ALTD_donor.fa', 'a') as atd:
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
                             if strand == "+":
                                 c2 = int(c2)
                                 extra_start = c2 - 69
@@ -147,7 +149,7 @@ with open(fasta) as handle:
 
                     if "ALTA" in event:
                         with open(f'{filename}_ALTA_acceptor.fa', 'a') as ata:
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
                             if strand == "-":
                                 c2 = int(c2)
                                 extra_start = c2 - 69
@@ -174,7 +176,7 @@ with open(fasta) as handle:
                         c2 = int(c2)
                         with open(f'{filename}_CS_donor.fa', 'a') as donor_intron_file,  open(f'{filename}_CS_acceptor.fa', 'a') as acceptor_intron_file:
                             if chr.upper() == cromo:
-                                id_full = f'>{chr}.{c1}-{c2}-{strand}'
+                                id_full = f'>chr{chr}.{c1}-{c2}-{strand}'
 
                                 c1_start = c1 - 69
                                 c2_start = c2 - 69
