@@ -1,5 +1,5 @@
 ### COORDINATES PATTERNS ###
-# For constitutive splicing (CS): chr1:4706-5095:[+/-] e.g. chromosome, start, end, strand
+# For constitutive splicing (CS) - constitutive exon: chr1:4706-5095:[+/-] e.g. chromosome, start, end, strand
 # For exons skipping (EX): chr1:4605,4706-5095,5174:[+/-] e.g chromosome:recognized E1end,skipped E2start-skipped E2end,recognized E3start:strand
 # For alternative donor (ALTD) - positive stand: chr2:-14152343:+ e.g chromosome:-alternative site:strand
 # For alternative donor (ALTD) - negative stand: chr2:14152343-:- e.g chromosome:alternative site-:strand
@@ -51,182 +51,129 @@ with open(fasta) as handle:
         # Openning input to get coordinates to extract sub-sequences
         with open(input, "r") as infile:
             for line in infile:
-                id = line.split(sep='\t')[0]
-                coord = line.split(sep='\t')[1]
-                chr = coord.split(sep=':')[0].upper()
-                if chr == args.chromosome.upper():
-                    print(f'Sequence {id} being processed...')
+                id, chr, c1, c2, strand, event = line.split(
+                    '\t')  # c1 = coordenate 1
+                if chr.upper() == cromo.upper():
+                    print(f'Sequence {event} being processed...')
+                    if "EX" in event:
+                        with open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd:
+                            # print(full_co, strand)
+                            sk_exon_c1 = int(c1)
+                            sk_exon_c2 = int(c2)
 
-                    # strand = line.split(sep='\t')[6]
-                    # strand = strand.split(sep=':')[2]
-                    # id = line.split('\t')[1]
-                    # full_co = line.split('\t')[4]
-                    # alternative_co = line.split('\t')[2]
+                            # Defining fasta sequences headers
+                            id_full = f'>{id}-{sk_exon_c1}-{sk_exon_c2}-{strand}-{chr}-{event}'
 
-                    if "EX" in id:
-                        with open(f'{filename}_EXrec_donor.fa', 'a') as erd, open(f'{filename}_EXsk_acceptor.fa', 'a') as eka, open(f'{filename}_EXsk_donor.fa', 'a') as ekd, open(f'{filename}_EXrec_acceptor.fa', 'a') as era:
-                            m = re.match(
-                                r'(.*):([0-9]*),([0-9+]*)-([0-9+]*),([0-9]*):([+/-])', coord)
-                            if m:
-                                # print(full_co, strand)
-                                C1_end = int(m.group(2))
-                                sk_start = m.group(3).split('+')
-                                sk_start = [int(i) for i in sk_start]
-                                sk_end = m.group(4).split('+')
-                                sk_end = [int(i) for i in sk_end]
-                                C2_start = int(m.group(5))
-                                strand = m.group(6)
+                            # Getting coordinates to extract sequences
+                            exon_c1_start = sk_exon_c1 - 69
+                            exon_c1_end = sk_exon_c1 + 71
+                            C1_end_seq = extract(
+                                seq_full, exon_c1_start, exon_c1_end, strand, 2)
 
-                                # Defining fasta sequences headers
-                                id_full = f'>{id}-{coord.split(":")[1]}-{strand}-{chr}'
+                            if strand == "+":
+                                eka.write(f'{id_full}\n')
+                                eka.write(f'{C1_end_seq}\n')
+                            else:  # if strand -
+                                ekd.write(f'{id_full}\n')
+                                ekd.write(f'{C1_end_seq}\n')
 
-                                # Getting coordinates to extract sequences
-                                C1_end_start = C1_end - 69
-                                C1_end_end = C1_end + 71
-                                C1_end_seq = extract(
-                                    seq_full, C1_end_start, C1_end_end, strand, 2)
-                                # print(C1_end_seq)
-                                if strand == "+":
-                                    erd.write(f'{id_full}\n')
-                                    erd.write(f'{C1_end_seq}\n')
-                                else:  # if strand -
-                                    era.write(f'{id_full}\n')
-                                    era.write(f'{C1_end_seq}\n')
+                            exon_c2_start = sk_exon_c2 - 69
+                            exon_c2_end = sk_exon_c2 + 71
+                            C2_end_seq = extract(
+                                seq_full, exon_c2_start, exon_c2_end, strand, 2)
 
-                                C2_start_start = C1_end - 69
-                                C2_start_end = C1_end + 71
-                                C2_start_seq = extract(
-                                    seq_full, C2_start_start, C2_start_end, strand, -3)
-                                # print(C2_start_seq)
-                                if strand == "-":
-                                    erd.write(f'{id_full}\n')
-                                    erd.write(f'{C1_end_seq}\n')
-                                else:  # if strand +
-                                    era.write(f'{id_full}\n')
-                                    era.write(f'{C1_end_seq}\n')
+                            if strand == "+":
+                                ekd.write(f'{id_full}\n')
+                                ekd.write(f'{C1_end_seq}\n')
+                            else:  # if strand -
+                                eka.write(f'{id_full}\n')
+                                eka.write(f'{C1_end_seq}\n')
 
-                                for sk_strt in sk_start:
-                                    sk_start_start = sk_strt - 69
-                                    sk_start_end = sk_strt + 71
-                                    sk_start_seq = extract(
-                                        seq_full, sk_start_start, sk_start_end, strand, -3)
-                                    # print(sk_start_seq)
-                                    if strand == "-":
-                                        ekd.write(f'{id_full}\n')
-                                        ekd.write(f'{C1_end_seq}\n')
-                                    else:  # if strand +
-                                        eka.write(f'{id_full}\n')
-                                        eka.write(f'{C1_end_seq}\n')
-
-                                for sk_ed in sk_end:
-                                    sk_end_start = sk_ed - 69
-                                    sk_end_end = sk_ed + 71
-                                    sk_end_seq = extract(
-                                        seq_full, sk_end_start, sk_end_end, strand, 2)
-                                    if strand == "+":
-                                        ekd.write(f'{id_full}\n')
-                                        ekd.write(f'{C1_end_seq}\n')
-                                    else:  # if strand -
-                                        eka.write(f'{id_full}\n')
-                                        eka.write(f'{C1_end_seq}\n')
-
-                    if "INT" in id:
+                    if "INT" in event:
                         with open(f'{filename}_INT_donor.fa', 'a') as intd, open(f'{filename}_INT_acceptor.fa', 'a') as inta:
-                            m = re.match(
-                                r'(.*):([0-9]*)-([0-9]*):([+/-])', coord)
-                            if m:
-                                start = int(m.group(2))
-                                end = int(m.group(3))
-                                strand = m.group(4)
+                            c1 = int(c1)
+                            c2 = int(c2)
 
-                                # Defining fasta sequences headers
-                                id_full = f'>{id}.{start}-{end}-{strand}-{chr}'
+                            # Defining fasta sequences headers
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
 
-                                # Getting coordinates to extract sequences
-                                start_start = start - 69
-                                start_end = start + 71
-                                end_start = end - 69
-                                end_end = end + 71
+                            # Getting coordinates to extract sequences
+                            intron_c1_start = c1 - 69
+                            intron_c1_end = c1 + 71
+                            intron_c2_start = c2 - 69
+                            intron_c2_end = c2 + 71
 
-                                start_seq = extract(
-                                    seq_full, start_start, start_end, strand, 0)
-                                if strand == "+":
-                                    intd.write(f'{id_full}\n')
-                                    intd.write(f'{start_seq}\n')
-                                else:  # if strand -
-                                    inta.write(f'{id_full}\n')
-                                    inta.write(f'{start_seq}\n')
+                            start_seq = extract(
+                                seq_full, intron_c1_start, intron_c1_end, strand, 0)
+                            if strand == "+":
+                                intd.write(f'{id_full}\n')
+                                intd.write(f'{start_seq}\n')
+                            else:  # if strand -
+                                inta.write(f'{id_full}\n')
+                                inta.write(f'{start_seq}\n')
 
-                                end_seq = extract(
-                                    seq_full, end_start, end_end, strand, 0)
-                                if strand == "-":
-                                    intd.write(f'{id_full}\n')
-                                    intd.write(f'{end_seq}\n')
-                                else:  # if strand +
-                                    inta.write(f'{id_full}\n')
-                                    inta.write(f'{end_seq}\n')
+                            end_seq = extract(
+                                seq_full, intron_c2_start, intron_c2_end, strand, 0)
+                            if strand == "-":
+                                intd.write(f'{id_full}\n')
+                                intd.write(f'{end_seq}\n')
+                            else:  # if strand +
+                                inta.write(f'{id_full}\n')
+                                inta.write(f'{end_seq}\n')
 
-                    if "ALTD" in id:
+                    if "ALTD" in event:
                         with open(f'{filename}_ALTD_donor.fa', 'a') as atd:
-                            m = re.match(
-                                r'(.*):.*,([0-9]*)-([0-9]*),([0-9]*):([+/-])', coord)
-                            if m:
-                                # alternative_co = alternative_co.split(":")[1]
-                                # start, end = alternative_co.split('-')
-                                c1 = m.group(2)
-                                c2 = m.group(3)
-                                c3 = m.group(4)
-                                strand = m.group(5)
-
-                                lista_ordenada = sorted(
-                                    [c1, c2, c3], reverse=True)
-                                c = lista_ordenada[1]
-
-                                c_start = int(c) - 69
-                                c_end = int(c) + 71
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
+                            if strand == "+":
+                                c2 = int(c2)
+                                extra_start = c2 - 69
+                                extra_end = c2 + 71
 
                                 seq_atd = extract(
-                                    seq_full, c_start, c_end, strand, 0)
-                                id_full = f'>{id}.{c_start}-{c_end}-{strand}-{chr}'
+                                    seq_full, extra_start, extra_end, strand, 0)
+
+                                atd.write(f'{id_full}\n')
+                                atd.write(f'{seq_atd}\n')
+                            else:  # if strand "-"
+                                c1 = int(c1)
+                                extra_start = c1 - 69
+                                extra_end = c1 + 71
+
+                                seq_atd = extract(
+                                    seq_full, extra_start, extra_end, strand, 0)
 
                                 atd.write(f'{id_full}\n')
                                 atd.write(f'{seq_atd}\n')
 
-                    if "ALTA" in id:
+                    if "ALTA" in event:
                         with open(f'{filename}_ALTA_acceptor.fa', 'a') as ata:
-                            m = re.match(
-                                r'(.*):([0-9]*),([0-9]*)-([0-9]*),.*:([+/-])', coord)
-                            if m:
-                                # alternative_co = alternative_co.split(":")[1]
-                                # start, end = alternative_co.split('-')
-                                c1 = m.group(2)
-                                c2 = m.group(3)
-                                c3 = m.group(4)
-                                lista_ordenada = sorted(
-                                    [c1, c2, c3], reverse=True)
-                                c = lista_ordenada[1]
-                                strand = m.group(5)
-                                c_start = int(c) - 69
-                                c_end = int(c) + 71
+                            id_full = f'>{id}.{c1}-{c2}-{strand}-{chr}-{event}'
+                            if strand == "-":
+                                c2 = int(c2)
+                                extra_start = c2 - 69
+                                extra_end = c2 + 71
 
-                            seq_ata = extract(
-                                seq_full, c_start, c_end, strand, 0)
-                            id_full = f'>{id}.{c_start}-{c_end}-{strand}-{chr}'
+                                seq_atd = extract(
+                                    seq_full, extra_start, extra_end, strand, 0)
 
-                            ata.write(f'{id_full}\n')
-                            ata.write(f'{seq_ata}\n')
+                                ata.write(f'{id_full}\n')
+                                ata.write(f'{seq_atd}\n')
+                            else:  # if strand "+"
+                                c1 = int(c1)
+                                extra_start = c1 - 69
+                                extra_end = c1 + 71
 
-                    if "CS" in id:  # constitutive splicing
-                        m = re.match(r'(.*):([0-9]*)-([0-9]*):([+/-]*)', coord)
-                        chr = m.group(1)
+                                seq_atd = extract(
+                                    seq_full, extra_start, extra_end, strand, 0)
+
+                                ata.write(f'{id_full}\n')
+                                ata.write(f'{seq_atd}\n')
+
+                    if "CS" in event:  # constitutive splicing
+                        c1 = int(c1)
+                        c2 = int(c2)
                         with open(f'{filename}_CS_donor.fa', 'a') as donor_intron_file,  open(f'{filename}_CS_acceptor.fa', 'a') as acceptor_intron_file:
                             if chr.upper() == cromo:
-                                c1 = m.group(2)
-                                c2 = m.group(3)
-                                strand = m.group(4)
-                                c1 = int(c1)
-                                c2 = int(c2)
-
                                 id_full = f'>{chr}.{c1}-{c2}-{strand}'
 
                                 c1_start = c1 - 69
@@ -241,14 +188,18 @@ with open(fasta) as handle:
 
                                 if strand == "+":
                                     donor_intron_file.write(f'{id_full}\n')
+                                    # c2 because here we're working with exons, not introns
                                     donor_intron_file.write(f'{c2_seq}\n')
 
                                     acceptor_intron_file.write(f'{id_full}\n')
-                                    acceptor_intron_file.write(f'{c1_seq}\n')
+                                    acceptor_intron_file.write(
+                                        f'{c1_seq}\n')  # exon
 
                                 else:
                                     donor_intron_file.write(f'{id_full}\n')
-                                    donor_intron_file.write(f'{c1_seq}\n')
+                                    donor_intron_file.write(
+                                        f'{c1_seq}\n')  # exon
 
                                     acceptor_intron_file.write(f'{id_full}\n')
-                                    acceptor_intron_file.write(f'{c2_seq}\n')
+                                    acceptor_intron_file.write(
+                                        f'{c2_seq}\n')  # exon
