@@ -1,11 +1,19 @@
 ### COORDINATES PATTERNS ###
-# For constitutive splicing (CS) - constitutive exon: chr1:4706-5095:[+/-] e.g. chromosome, start, end, strand
-# For exons skipping (EX): chr1:4605,4706-5095,5174:[+/-] e.g chromosome:recognized E1end,skipped E2start-skipped E2end,recognized E3start:strand
-# For alternative donor (ALTD) - positive stand: chr2:-14152343:+ e.g chromosome:-alternative site:strand
-# For alternative donor (ALTD) - negative stand: chr2:14152343-:- e.g chromosome:alternative site-:strand
-# For alternative acceptor (ALTA) - positive stand: chr2:14152343-:+ e.g chromosome:alternative site-:strand
-# For alternative accepor (ALTA) - negative stand: chr2:-14152343:- e.g chromosome:-alternative site:strand
-# For intron retention (IR) - chr1:101010-202020:[+/-] e.g chromosome:intron start-intron end:strand
+# all coordinates files should have 6 columns: ID, CHR, C1, C2, Strand, Event
+# in this specific order and without header
+# C1 and C2 comprehend coordinates 1 and 2, they do not need to be in 5' - 3' order
+# Strand should be either + or -
+# Event can be: INT for reteined intron, ALTA for alternative acceptor/5', ALTD for alternative donor/3', EX for exon skipping or CS for constitutive splicing
+# All lines should have a value, except for ALTA/ALTD events:
+# For ALTA strand +, C2 can be empty | for ALTA strand -, C1 can be empty
+# For ALTD strand +, C1 can be empty | for ALTD strand -, C2 can be empty
+# For CS events the script expects an EXON coordinate
+# For INT events the script expects an INTRON coordinate
+# For EX events the script expects an EXONS coordinate
+# For ALTA and ALTD the scrips expect the alternative SS site
+# For an illustrative representation see figure "splicing_events.png" at projects GitHub
+# We recommend to use the same pattern for chr name in gtf, genome and coordinate files
+
 
 # Imports
 import re
