@@ -86,10 +86,10 @@ with open(fasta) as handle:
 
                             if strand == "+":
                                 ekd.write(f'{id_full}\n')
-                                ekd.write(f'{C1_end_seq}\n')
+                                ekd.write(f'{C2_end_seq}\n')
                             else:  # if strand -
                                 eka.write(f'{id_full}\n')
-                                eka.write(f'{C1_end_seq}\n')
+                                eka.write(f'{C2_end_seq}\n')
 
                     if "INT" in event:
                         with open(f'{filename}_INT_donor.fa', 'a') as intd, open(f'{filename}_INT_acceptor.fa', 'a') as inta:
