@@ -18,6 +18,7 @@ CI_donor =read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Athalia
 CI_acceptor_quasi = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Athaliana_genome/csv/AtRTDv2_QUASI_ALL_constitutive_Acceptor_intron.csv')
 CI_donor_quasi = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Athaliana_genome/csv/AtRTDv2_QUASI_ALL_constitutive_Donor_intron.csv')
 
+
 altFive_correct = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Athaliana_genome/csv/TAIR10_ALL_ALTdonor.csv')
 altThree_correct = read.csv('/home/bia/sugarcane_introns_local/SecondaryStructure/Athaliana_genome/csv/TAIR10_ALL_ALTacceptor.csv')
 
