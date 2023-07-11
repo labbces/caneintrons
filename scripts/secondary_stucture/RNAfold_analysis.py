@@ -1,31 +1,52 @@
+# TODO if run extractor again, get event auto by header pattern
 import pandas as pd
 import re
 import argparse
+import subprocess
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type=str, required=True,
                     help='RNAfold output file')
-parser.add_argument("-o", "--output", type=str, required=True)
-parser.add_argument("-t", "--tag", type=str, required=True)
+parser.add_argument("-o", "--output", type=str, required=True,
+                    help='For "teste" as -o, the output will be teste.csv')
+#parser.add_argument("-t", "--tag", type=str, required=True)
+parser.add_argument("-e", "--event", type=str, required=True,
+                    help='ALTA, INT, ALTD, CS or EX')
+parser.add_argument("-g", "--grapple", type=str, required=False,
+                    help='path to GraPPLE get_properties.R script - if avaiable')
 args = parser.parse_args()
 
-#infile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.RNAfold'
-#outfile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.csv'
 
+# Calling grapple get properties R script as a function
+def grapple_prop(script, structure):
+    output = subprocess.check_output(['Rscript', script, structure])
+    output = output.decode('utf-8')
+    return output
+
+
+# infile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.RNAfold'
+# outfile = '/home/bia/sugarcane_introns_local/data/RNAstruc_Athaliana/pergunta1/constitutive_Athaliana_Acceptor1.csv'
 infile = args.input
 outfile = args.output
 
-with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
-    outfile.write(
-        f'label,freq,freq1/2,freq2/2,freq1/3,freq2/3,freq3/3,substru,deltaG,Stem_comp\n')
+with open(infile, 'r') as infile, open(f"{outfile}.csv", 'w') as outfile:
+    if args.grapple is not None:
+        outfile.write(
+            f'id,label,freq,freq1/2,freq2/2,freq1/3,freq2/3,freq3/3,substru,deltaG,Stem_comp,articulation_points,average_path_length,average_node_betwennness,variance_node_betweenness,average_edge_betweenness,variance_edge_betweenness,average_cocitation_coupling,average_bibliographic_coupling,average_closeness_centrality,variance_closeness_centrality,average_burts_constraint,variance_burts_constraint,average_degree,diameter,girth,average_coreness,varince_coreness,max_coreness,graph_density,transitivity\n')
+    else:
+        outfile.write(
+            'id,label,freq,freq1/2,freq2/2,freq1/3,freq2/3,freq3/3,substru,deltaG,Stem_comp\n')
+
     for line in infile:
         line = line.rstrip('\n')
         # print(line)
-        if line.rstrip().endswith(')'):
+        if line.startswith('>'):
+            id = line
+        elif line.rstrip().endswith(')'):
             struc = line.split(' ', 1)[0]
             deltaG = float(line.split(' ', 1)[1].lstrip('(').rstrip(')'))
-            label = args.tag
+            label = args.event
 
             # calculando a frequencia geral
             comprim = len(struc)
@@ -71,8 +92,14 @@ with open(infile, 'r') as infile, open(outfile, 'w') as outfile:
             else:
                 stem_comp = 0
 
-            outfile.write(
-                f'{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp}\n')
+            if args.grapple is not None:
+                out_grapple = grapple_prop(
+                    script=args.grapple, structure=struc)
+                outfile.write(
+                    f'{id},{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp},{out_grapple.strip()}\n')
+            else:
+                outfile.write(
+                    f'{id},{label},{freq},{freq12},{freq22},{freq13},{freq23},{freq33},{substru},{deltaG},{stem_comp}\n')
 '''
 
 df1 = pd.read_csv(

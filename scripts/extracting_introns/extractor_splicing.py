@@ -72,7 +72,7 @@ with open(fasta) as handle:
                             c2 = int(float(c2))
 
                             # Defining fasta sequences headers
-                            id_full = f'>{id}-{c1}-{c2}-{strand}-chr{chr}-{event}'
+                            id_full = f'>{id}.{event}_chr{chr}:{c1}-{c2}:{strand}'
 
                             # Getting coordinates to extract sequences
                             exon_c1_start = c1 - 69
@@ -105,7 +105,7 @@ with open(fasta) as handle:
                             c2 = int(float(c2))
 
                             # Defining fasta sequences headers
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
+                            id_full = f'>{id}.{event}_chr{chr}:{c1}-{c2}:{strand}'
 
                             # Getting coordinates to extract sequences
                             intron_c1_start = c1 - 69
@@ -133,7 +133,7 @@ with open(fasta) as handle:
 
                     if "ALTD" in event:
                         with open(f'{filename}_ALTD_donor.fa', 'a') as atd:
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
+                            id_full = f'>{id}.{event}_chr{chr}:{c1}-{c2}:{strand}'
                             if strand == "+":
                                 c2 = int(float(c2))
                                 extra_start = c2 - 69
@@ -157,7 +157,7 @@ with open(fasta) as handle:
 
                     if "ALTA" in event:
                         with open(f'{filename}_ALTA_acceptor.fa', 'a') as ata:
-                            id_full = f'>{id}.{c1}-{c2}-{strand}-chr{chr}-{event}'
+                            id_full = f'>{id}.{event}_chr{chr}:{c1}-{c2}:{strand}'
                             if strand == "-":
                                 c2 = int(float(c2))
                                 extra_start = c2 - 69
@@ -184,7 +184,7 @@ with open(fasta) as handle:
                         c2 = int(float(c2))
                         with open(f'{filename}_CS_donor.fa', 'a') as donor_intron_file,  open(f'{filename}_CS_acceptor.fa', 'a') as acceptor_intron_file:
                             if chr.upper() == cromo:
-                                id_full = f'>chr{chr}.{c1}-{c2}-{strand}'
+                                id_full = f'>{id}.{event}_chr{chr}:{c1}-{c2}:{strand}'
 
                                 c1_start = c1 - 69
                                 c2_start = c2 - 69
