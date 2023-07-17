@@ -59,8 +59,14 @@ with open(fasta) as handle:
         # Openning input to get coordinates to extract sub-sequences
         with open(input, "r") as infile:
             for line in infile:
-                id, chr, c1, c2, strand, event = line.split(
+                id, chr, c1, c2, strand, event = line.rstrip('\n').split(
                     '\t')  # c1 = coordenate 1
+                id = id.strip()
+                chr = chr.strip()
+                c1 = c1.strip()
+                c2 = c2.strip()
+                strand = strand.strip()
+                event = event.strip()
                 chr = chr.upper()
                 chr = chr.replace('CHR', '')
                 if chr == cromo.upper():
@@ -81,11 +87,11 @@ with open(fasta) as handle:
                                 seq_full, exon_c1_start, exon_c1_end, strand, 2)
 
                             if strand == "+":
-                                eka.write(f'{id_full}\n')
-                                eka.write(f'{C1_end_seq}\n')
+                                eka.write(f'{id_full.strip()}\n')
+                                eka.write(f'{C1_end_seq.strip()}\n')
                             else:  # if strand -
-                                ekd.write(f'{id_full}\n')
-                                ekd.write(f'{C1_end_seq}\n')
+                                ekd.write(f'{id_full.strip()}\n')
+                                ekd.write(f'{C1_end_seq.strip()}\n')
 
                             exon_c2_start = c2 - 69
                             exon_c2_end = c2 + 71
@@ -93,11 +99,11 @@ with open(fasta) as handle:
                                 seq_full, exon_c2_start, exon_c2_end, strand, 2)
 
                             if strand == "+":
-                                ekd.write(f'{id_full}\n')
-                                ekd.write(f'{C2_end_seq}\n')
+                                ekd.write(f'{id_full.strip()}\n')
+                                ekd.write(f'{C2_end_seq.strip()}\n')
                             else:  # if strand -
-                                eka.write(f'{id_full}\n')
-                                eka.write(f'{C2_end_seq}\n')
+                                eka.write(f'{id_full.strip()}\n')
+                                eka.write(f'{C2_end_seq.strip()}\n')
 
                     if "INT" in event:
                         with open(f'{filename}_INT_donor.fa', 'a') as intd, open(f'{filename}_INT_acceptor.fa', 'a') as inta:
@@ -116,20 +122,20 @@ with open(fasta) as handle:
                             start_seq = extract(
                                 seq_full, intron_c1_start, intron_c1_end, strand, 0)
                             if strand == "+":
-                                intd.write(f'{id_full}\n')
-                                intd.write(f'{start_seq}\n')
+                                intd.write(f'{id_full.strip()}\n')
+                                intd.write(f'{start_seq.strip()}\n')
                             else:  # if strand -
-                                inta.write(f'{id_full}\n')
-                                inta.write(f'{start_seq}\n')
+                                inta.write(f'{id_full.strip()}\n')
+                                inta.write(f'{start_seq.strip()}\n')
 
                             end_seq = extract(
                                 seq_full, intron_c2_start, intron_c2_end, strand, 0)
                             if strand == "-":
-                                intd.write(f'{id_full}\n')
-                                intd.write(f'{end_seq}\n')
+                                intd.write(f'{id_full.strip()}\n')
+                                intd.write(f'{end_seq.strip()}\n')
                             else:  # if strand +
-                                inta.write(f'{id_full}\n')
-                                inta.write(f'{end_seq}\n')
+                                inta.write(f'{id_full.strip()}\n')
+                                inta.write(f'{end_seq.strip()}\n')
 
                     if "ALTD" in event:
                         with open(f'{filename}_ALTD_donor.fa', 'a') as atd:
@@ -142,8 +148,8 @@ with open(fasta) as handle:
                                 seq_atd = extract(
                                     seq_full, extra_start, extra_end, strand, 0)
 
-                                atd.write(f'{id_full}\n')
-                                atd.write(f'{seq_atd}\n')
+                                atd.write(f'{id_full.strip()}\n')
+                                atd.write(f'{seq_atd.strip()}\n')
                             else:  # if strand "-"
                                 c1 = int(float(c1))
                                 extra_start = c1 - 69
@@ -152,8 +158,8 @@ with open(fasta) as handle:
                                 seq_atd = extract(
                                     seq_full, extra_start, extra_end, strand, 0)
 
-                                atd.write(f'{id_full}\n')
-                                atd.write(f'{seq_atd}\n')
+                                atd.write(f'{id_full.strip()}\n')
+                                atd.write(f'{seq_atd.strip()}\n')
 
                     if "ALTA" in event:
                         with open(f'{filename}_ALTA_acceptor.fa', 'a') as ata:
@@ -166,8 +172,8 @@ with open(fasta) as handle:
                                 seq_atd = extract(
                                     seq_full, extra_start, extra_end, strand, 0)
 
-                                ata.write(f'{id_full}\n')
-                                ata.write(f'{seq_atd}\n')
+                                ata.write(f'{id_full.strip()}\n')
+                                ata.write(f'{seq_atd.strip()}\n')
                             else:  # if strand "+"
                                 c1 = int(float(c1))
                                 extra_start = c1 - 69
@@ -176,8 +182,8 @@ with open(fasta) as handle:
                                 seq_atd = extract(
                                     seq_full, extra_start, extra_end, strand, 0)
 
-                                ata.write(f'{id_full}\n')
-                                ata.write(f'{seq_atd}\n')
+                                ata.write(f'{id_full.strip()}\n')
+                                ata.write(f'{seq_atd.strip()}\n')
 
                     if "CS" in event:  # constitutive splicing
                         c1 = int(float(c1))
@@ -197,19 +203,24 @@ with open(fasta) as handle:
                                     seq_full=seq_full, start=c2_start, end=c2_end, strand=strand, neg_effect=0)
 
                                 if strand == "+":
-                                    donor_intron_file.write(f'{id_full}\n')
+                                    donor_intron_file.write(
+                                        f'{id_full.strip()}\n')
                                     # c2 because here we're working with exons, not introns
-                                    donor_intron_file.write(f'{c2_seq}\n')
+                                    donor_intron_file.write(
+                                        f'{c2_seq.strip()}\n')
 
-                                    acceptor_intron_file.write(f'{id_full}\n')
                                     acceptor_intron_file.write(
-                                        f'{c1_seq}\n')  # exon
+                                        f'{id_full.strip()}\n')
+                                    acceptor_intron_file.write(
+                                        f'{c1_seq.strip()}\n')  # exon
 
                                 else:
-                                    donor_intron_file.write(f'{id_full}\n')
                                     donor_intron_file.write(
-                                        f'{c1_seq}\n')  # exon
+                                        f'{id_full.strip()}\n')
+                                    donor_intron_file.write(
+                                        f'{c1_seq.strip()}\n')  # exon
 
-                                    acceptor_intron_file.write(f'{id_full}\n')
                                     acceptor_intron_file.write(
-                                        f'{c2_seq}\n')  # exon
+                                        f'{id_full.strip()}\n')
+                                    acceptor_intron_file.write(
+                                        f'{c2_seq.strip()}\n')  # exon
