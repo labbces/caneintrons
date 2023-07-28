@@ -3,24 +3,33 @@
 ##############################################
 
 # loading analysis csv files
-dCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_CS_donor.csv', header = TRUE)
-aCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_CS_acceptor.csv', header = TRUE)
-ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_ALTA_acceptor.csv', header = TRUE)
-ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_ALTD_donor.csv', header = TRUE)
-dINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_INT_donor.csv', header = TRUE)
-aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_INT_acceptor.csv', header = TRUE)
-dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_EXsk_donor.csv', header = TRUE)
-aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated/features_grapple/ALL_hg18_human_EXsk_acceptor.csv', header = TRUE)
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_acceptor.csv', header = TRUE)
+
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_EXsk_acceptor.csv', header = TRUE)
 
 # checking values type - all should be numeric or integer, chr shouldn't be here, change it for factor bellow
-str(dCS)
-str(aCS)
-str(ALTA)
-str(ALTD)
-str(dINT)
-str(aINT)
-str(dEX)
-str(aEX)
+#str(dCS)
+#str(aCS)
+# str(ALTA)
+# str(ALTD)
+# str(dINT)
+# str(aINT)
+# str(dEX)
+# str(aEX)
 
 ###############################################################################
 ### IN CASE chr class IN DF, CHANGE IT TO FACTOR USING THE FOLLOWING LINES ###
@@ -39,15 +48,15 @@ aEX$label = as.factor(aEX$label)
 ##############################################################################
 ### IN CASE non needed COLUMN IN DF, use the following code to exclude it ###
 # 
-dCS = subset(dCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aCS = subset(aCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-ALTA = subset(ALTA, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-ALTD = subset(ALTD, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-dINT = subset(dINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aINT = subset(aINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-dEX = subset(dEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-###################################################################################
+# dCS = subset(dCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aCS = subset(aCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# ALTA = subset(ALTA, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# ALTD = subset(ALTD, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# dINT = subset(dINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aINT = subset(aINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# dEX = subset(dEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# # ###################################################################################
 
 #########################################################################################
 ### IN CASE OF nonNA NA VALUES IN DF, IT IS POSSIBLE USE THE FOLLOWING CODE TO FIX IT ###
@@ -137,6 +146,47 @@ CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label)
 CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
 randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
 
+# CS vc AS
+sample_size_CS = 3000 # Change for the sample size you want
+sample_size = 1000
+set.seed(30)
+
+library(dplyr)
+
+dCS = sample_n(dCS, sample_size_CS)
+aCS = sample_n(aCS, sample_size_CS)
+ALTA = sample_n(ALTA, sample_size)
+ALTD = sample_n(ALTD, sample_size)
+dINT = sample_n(dINT, sample_size)
+aINT = sample_n(aINT, sample_size)
+dEX = sample_n(dEX, sample_size)
+aEX = sample_n(aEX, sample_size)
+
+CS_DONOR = rbind(dCS, ALTD, dINT, dEX)
+CS_ACCEPTOR = rbind(aCS, ALTA, aINT, aEX)
 
 
+CS_DONOR = subset(CS_DONOR, select = -c(id))
+library(dplyr)
+CS_DONOR$label = as.character(CS_DONOR$label) 
+CS_DONOR["label"][CS_DONOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_DONOR$label = as.factor(CS_DONOR$label) 
+r = randomForest(label ~ .,data=CS_DONOR, ntree=500)
+r
+varImpPlot(r)
+
+
+CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
+CS_ACCEPTOR$label = as.character(CS_ACCEPTOR$label) 
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label) 
+r = randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
+r
+varImpPlot(r)
 

@@ -3,14 +3,14 @@
 ##############################################
 
 # loading analysis csv files
-dCS = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_CS_donor.csv', header = TRUE)
-aCS = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_CS_acceptor.csv', header = TRUE)
-ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_ALTA_acceptor.csv', header = TRUE)
-ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_ALTD_donor.csv', header = TRUE)
-dINT = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_INT_donor.csv', header = TRUE)
-aINT = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_INT_acceptor.csv', header = TRUE)
-dEX = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple/TAIR10_ALL_AtRTDv2_QUASI_EXsk_donor.csv', header = TRUE)
-aEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_EXsk_acceptor.csv', header = TRUE)
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/Athaliana_genome/generated/features_grapple_din/TAIR10_ALL_AtRTDv2_QUASI_EXsk_acceptor.csv', header = TRUE)
 
 # checking values type - all should be numeric or integer, chr shouldn't be here, change it for factor bellow
 str(dCS)
@@ -123,7 +123,7 @@ dCS_ALTD = subset(dCS_ALTD, select = -c(id))
 randomForest(label ~ .,data=dCS_ALTD, ntree=500)
 
 dCS_INT = subset(dCS_INT, select = -c(id))
-randomForest(label ~ .,data=dCS_INT, ntree=500)  ## 
+randomForest(label ~ .,data=dCS_INT, ntree=500)  
 
 aCS_INT = subset(aCS_INT, select = -c(id))
 randomForest(label ~ .,data=aCS_INT, ntree=500)
@@ -144,6 +144,52 @@ CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label)
 CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
 randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
 
+
+
+
+
+sample_size_CS = 3000 # Change for the sample size you want
+sample_size = 1000
+set.seed(30)
+
+library(dplyr)
+
+dCS = sample_n(dCS, sample_size_CS)
+aCS = sample_n(aCS, sample_size_CS)
+ALTA = sample_n(ALTA, sample_size)
+ALTD = sample_n(ALTD, sample_size)
+dINT = sample_n(dINT, sample_size)
+aINT = sample_n(aINT, sample_size)
+dEX = sample_n(dEX, sample_size)
+aEX = sample_n(aEX, sample_size)
+
+CS_DONOR = rbind(dCS, ALTD, dINT, dEX)
+CS_ACCEPTOR = rbind(aCS, ALTA, aINT, aEX)
+
+
+CS_DONOR = subset(CS_DONOR, select = -c(id))
+library(dplyr)
+CS_DONOR$label = as.character(CS_DONOR$label) 
+CS_DONOR["label"][CS_DONOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_DONOR$label = as.factor(CS_DONOR$label) 
+r = randomForest(label ~ .,data=CS_DONOR, ntree=500)
+r
+varImpPlot(r)
+
+
+CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
+CS_ACCEPTOR$label = as.character(CS_ACCEPTOR$label) 
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label) 
+r = randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
+r
+varImpPlot(r)
 
 
 

@@ -1,16 +1,16 @@
 library(ggplot2)
 
 # Dados de exemplo
-genomas <- c("Athaliana", "Human", "Maize")
-CS <- c(29886,9043,4410)
-ALTA <- c(85049,3634,24748)
-ALTD <- c(43643,5332,17871)
-INT <- c(115163,5150,46416)
-EX <- c(92764,24511,14531)
+genomas <- c("Athaliana", "Human hg18", "Human hg38", "Maize")
+CS <- c(29886,9043, 128437, 4410)
+ALTA <- c(85049,3634,11729,24748)
+ALTD <- c(43643,5332,19849,17871)
+INT <- c(115163,5150,34905,46416)
+EX <- c(92764,24511,85268,14531)
 
 # Criar um dataframe com os dados
 dados <- data.frame(Genoma = rep(genomas, 5),
-                    Event = rep(c( "CS", "ALTA", "ALTD", "INT", "EX"), each = 3),
+                    Event = rep(c( "CS", "ALTA", "ALTD", "INT", "EX"), each = 4),
                     Valor = c(CS, ALTA, ALTD, INT, EX))
 
 cores = c("lightpink", "royalblue", "skyblue1", "khaki", "palegreen2")

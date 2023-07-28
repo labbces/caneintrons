@@ -3,14 +3,14 @@
 ##############################################
 
 # loading analysis csv files
-dCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_CS_donor.csv', header = TRUE)
-aCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_CS_acceptor.csv', header = TRUE)
-ALTA = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_ALTA_acceptor.csv', header = TRUE)
-ALTD = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_ALTD_donor.csv', header = TRUE)
-dINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_INT_donor.csv', header = TRUE)
-aINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_INT_acceptor.csv', header = TRUE)
-dEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_EXsk_donor.csv', header = TRUE)
-aEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple/ALL_2017v31_maize_EXsk_acceptor.csv', header = TRUE)
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_EXsk_acceptor.csv', header = TRUE)
 
 # checking values type - all should be numeric or integer, chr shouldn't be here, change it for factor bellow
 str(dCS)
@@ -64,7 +64,7 @@ aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,subst
 
 ####################################################################################
 ### IN CASE OF LONG DF, IT IS POSSIBLE TO MAKE A SAMPLE USING THE FOLLOWING CODE ###
-sample_size = 3000 # Change for the sample size you want
+sample_size = 4000 # Change for the sample size you want
 set.seed(30)
 
 library(dplyr)
@@ -81,6 +81,7 @@ aEX = sample_n(aEX, sample_size)
 
 # binding analysis DF for random forest running
 aCS_ALTA = rbind(aCS, ALTA)
+
 dCS_ALTD = rbind(dCS, ALTD)
 dCS_INT = rbind(dCS, dINT)
 aCS_INT = rbind(aCS, aINT)
@@ -119,7 +120,7 @@ dCS_ALTD = subset(dCS_ALTD, select = -c(id))
 randomForest(label ~ .,data=dCS_ALTD, ntree=500)
 
 dCS_INT = subset(dCS_INT, select = -c(id))
-randomForest(label ~ .,data=dCS_INT, ntree=500)  ## 
+r = randomForest(label ~ .,data=dCS_INT, ntree=500)  ## 
 
 aCS_INT = subset(aCS_INT, select = -c(id))
 randomForest(label ~ .,data=aCS_INT, ntree=500)
@@ -137,8 +138,56 @@ randomForest(label ~ .,data=CS_DONOR, ntree=500)
 
 CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label) 
 CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
-randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500) ## ALTA?
+randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500) #
+
+r
+varImpPlot(r)
+d = dCS_INT
+hist(d$variance_burts_constraint[d$label=="INT"],breaks=100)
+hist(d$variance_burts_constraint[d$label=="CS"],breaks=100,add=T,col=2)
 
 
 
 
+
+sample_size_CS = 3000 # Change for the sample size you want
+sample_size = 1000
+set.seed(30)
+
+library(dplyr)
+
+dCS = sample_n(dCS, sample_size_CS)
+aCS = sample_n(aCS, sample_size_CS)
+ALTA = sample_n(ALTA, sample_size)
+ALTD = sample_n(ALTD, sample_size)
+dINT = sample_n(dINT, sample_size)
+aINT = sample_n(aINT, sample_size)
+dEX = sample_n(dEX, sample_size)
+aEX = sample_n(aEX, sample_size)
+
+CS_DONOR = rbind(dCS, ALTD, dINT, dEX)
+CS_ACCEPTOR = rbind(aCS, ALTA, aINT, aEX)
+
+CS_DONOR = subset(CS_DONOR, select = -c(id))
+library(dplyr)
+CS_DONOR$label = as.character(CS_DONOR$label) 
+CS_DONOR["label"][CS_DONOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_DONOR["label"][CS_DONOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_DONOR$label = as.factor(CS_DONOR$label) 
+r = randomForest(label ~ .,data=CS_DONOR, ntree=500)
+r
+varImpPlot(r)
+
+
+CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
+CS_ACCEPTOR$label = as.character(CS_ACCEPTOR$label) 
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTA"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "ALTD"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "INT"] <- "ALTERNATIVO"
+CS_ACCEPTOR["label"][CS_ACCEPTOR["label"] == "EXsk"] <- "ALTERNATIVO"
+CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label) 
+r = randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
+r
+varImpPlot(r)
