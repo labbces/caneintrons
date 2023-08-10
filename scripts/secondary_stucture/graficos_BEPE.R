@@ -18,6 +18,7 @@ dados_hist_CS_donor = data.frame(delta_g = as.numeric(names(CS_donor_porcent)), 
 
 ALTD_porcent = prop.table(table(ALTD_donor$deltaG)) * 100
 dados_hist_ALTD = data.frame(delta_g = as.numeric(names(ALTD_porcent)), ALTD_porcent)
+
 ggplot() +
   geom_bar(data = dados_hist_CS_donor, aes(x = delta_g, y = CS_donor_porcent, fill = "Doador Constitutivo"), stat = "identity", alpha = 0.5,color = "royalblue") +
   geom_bar(data = dados_hist_ALTD, aes(x = delta_g, y = ALTD_porcent, fill = "ALTD"), stat = "identity", alpha = 0.5, color = "pink") +
