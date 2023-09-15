@@ -1,3 +1,5 @@
+set.seed(123)
+
 ##############################################
 #########---------- HUMANS ----------#########
 ##############################################
@@ -12,14 +14,6 @@ aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_h
 dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_donor.csv', header = TRUE)
 aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_acceptor.csv', header = TRUE)
 
-dCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_CS_donor.csv', header = TRUE)
-aCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_CS_acceptor.csv', header = TRUE)
-ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_ALTA_acceptor.csv', header = TRUE)
-ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_ALTD_donor.csv', header = TRUE)
-dINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_INT_donor.csv', header = TRUE)
-aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_INT_acceptor.csv', header = TRUE)
-dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_EXsk_donor.csv', header = TRUE)
-aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple/ALL_hg38_human_EXsk_acceptor.csv', header = TRUE)
 
 # checking values type - all should be numeric or integer, chr shouldn't be here, change it for factor bellow
 #str(dCS)
@@ -36,7 +30,7 @@ aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg
 #
 dCS$label = as.factor(dCS$label) 
 aCS$label = as.factor(aCS$label) 
-ALTA$label = as.factor(ALTA$label) 
+#ALTA$label = as.factor(ALTA$label) 
 ALTD$label = as.factor(ALTD$label) 
 dINT$label = as.factor(dINT$label) 
 aINT$label = as.factor(aINT$label) 
@@ -74,7 +68,6 @@ aEX$label = as.factor(aEX$label)
 ####################################################################################
 ### IN CASE OF LONG DF, IT IS POSSIBLE TO MAKE A SAMPLE USING THE FOLLOWING CODE ###
 sample_size = 3000 # Change for the sample size you want
-set.seed(30)
 
 library(dplyr)
 
@@ -123,13 +116,19 @@ aCS_ALTA = subset(aCS_ALTA, select = -c(id))
 randomForest(label ~ .,data=aCS_ALTA, ntree=500)
 
 dCS_ALTD = subset(dCS_ALTD, select = -c(id))
-randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+CSxALTD = randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+varImpPlot(CSxALTD)
 
 dCS_INT = subset(dCS_INT, select = -c(id))
 randomForest(label ~ .,data=dCS_INT, ntree=500)
+CSxINT_donor = randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+varImpPlot(CSxINT_donor)
 
 aCS_INT = subset(aCS_INT, select = -c(id))
 randomForest(label ~ .,data=aCS_INT, ntree=500)
+CSxINT_acceptor = randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+varImpPlot(CSxINT_acceptor)
+
 
 dCS_EX = subset(dCS_EX, select = -c(id))
 randomForest(label ~ .,data=dCS_EX, ntree=500)
@@ -146,10 +145,26 @@ CS_ACCEPTOR$label = as.factor(CS_ACCEPTOR$label)
 CS_ACCEPTOR = subset(CS_ACCEPTOR, select = -c(id))
 randomForest(label ~ .,data=CS_ACCEPTOR, ntree=500)
 
-# CS vc AS
+
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/Human_genome/generated_hg38/features_grapple_din/ALL_hg38_human_EXsk_acceptor.csv', header = TRUE)
+
+dCS$label = as.factor(dCS$label) 
+aCS$label = as.factor(aCS$label) 
+#ALTA$label = as.factor(ALTA$label) 
+ALTD$label = as.factor(ALTD$label) 
+dINT$label = as.factor(dINT$label) 
+aINT$label = as.factor(aINT$label) 
+dEX$label = as.factor(dEX$label) 
+aEX$label = as.factor(aEX$label) 
 sample_size_CS = 3000 # Change for the sample size you want
 sample_size = 1000
-set.seed(30)
 
 library(dplyr)
 

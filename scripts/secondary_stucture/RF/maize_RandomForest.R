@@ -1,3 +1,5 @@
+set.seed(123)
+
 ##############################################
 #########---------- MAIZE ----------#########
 ##############################################
@@ -27,7 +29,7 @@ str(aEX)
 #
 dCS$label = as.factor(dCS$label) 
 aCS$label = as.factor(aCS$label) 
-ALTA$label = as.factor(ALTA$label) 
+#ALTA$label = as.factor(ALTA$label) 
 ALTD$label = as.factor(ALTD$label) 
 dINT$label = as.factor(dINT$label) 
 aINT$label = as.factor(aINT$label) 
@@ -38,16 +40,16 @@ aEX$label = as.factor(aEX$label)
 
 ##############################################################################
 ### IN CASE non needed COLUMN IN DF, use the following code to exclude it ###
-# 
-dCS = subset(dCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aCS = subset(aCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-ALTA = subset(ALTA, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-ALTD = subset(ALTD, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-dINT = subset(dINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aINT = subset(aINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-dEX = subset(dEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
-###################################################################################
+# # 
+# dCS = subset(dCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aCS = subset(aCS, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# ALTA = subset(ALTA, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# ALTD = subset(ALTD, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# dINT = subset(dINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aINT = subset(aINT, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# dEX = subset(dEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,substru,Stem_comp))
+# ###################################################################################
 
 #########################################################################################
 ### IN CASE OF nonNA NA VALUES IN DF, IT IS POSSIBLE USE THE FOLLOWING CODE TO FIX IT ###
@@ -64,7 +66,7 @@ aEX = subset(aEX, select = -c(freq,freq1.2,freq2.2,freq1.3,freq2.3,freq3.3,subst
 
 ####################################################################################
 ### IN CASE OF LONG DF, IT IS POSSIBLE TO MAKE A SAMPLE USING THE FOLLOWING CODE ###
-sample_size = 4000 # Change for the sample size you want
+sample_size = 3000 # Change for the sample size you want
 set.seed(30)
 
 library(dplyr)
@@ -113,23 +115,28 @@ library(randomForest)
 # From pair biding 
 aCS_ALTA$label = as.factor(aCS_ALTA$label) 
 aCS_ALTA = subset(aCS_ALTA, select = -c(id))
-randomForest(label ~ .,data=aCS_ALTA, ntree=500) 
-str(aCS_ALTA)
+CSxALTA= randomForest(label ~ .,data=aCS_ALTA, ntree=500) 
+varImpPlot(CSxALTA)
 
 dCS_ALTD = subset(dCS_ALTD, select = -c(id))
-randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+CSxALTD = randomForest(label ~ .,data=dCS_ALTD, ntree=500)
+varImpPlot(CSxALTD)
 
 dCS_INT = subset(dCS_INT, select = -c(id))
-r = randomForest(label ~ .,data=dCS_INT, ntree=500)  ## 
+CSxINT_donor = randomForest(label ~ .,data=dCS_INT, ntree=500)  ## 
+varImpPlot(CSxINT_donor)
 
 aCS_INT = subset(aCS_INT, select = -c(id))
-randomForest(label ~ .,data=aCS_INT, ntree=500)
+CSxINT_acceptor = randomForest(label ~ .,data=aCS_INT, ntree=500)
+varImpPlot(CSxINT_acceptor)
 
 dCS_EX = subset(dCS_EX, select = -c(id))
-randomForest(label ~ .,data=dCS_EX, ntree=500)
+CSxEX_donor = randomForest(label ~ .,data=dCS_EX, ntree=500)
+varImpPlot(CSxEX_donor)
 
 aCS_EX = subset(aCS_EX, select = -c(id))
-randomForest(label ~ .,data=aCS_EX, ntree=500)
+CSxEX_acceptor = randomForest(label ~ .,data=aCS_EX, ntree=500)
+varImpPlot(CSxEX_acceptor)
 
 # From separated by SS type 
 CS_DONOR$label = as.factor(CS_DONOR$label) 
@@ -147,12 +154,30 @@ hist(d$variance_burts_constraint[d$label=="INT"],breaks=100)
 hist(d$variance_burts_constraint[d$label=="CS"],breaks=100,add=T,col=2)
 
 
+dCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_CS_donor.csv', header = TRUE)
+aCS = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_CS_acceptor.csv', header = TRUE)
+ALTA = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_ALTA_acceptor.csv', header = TRUE)
+ALTD = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_ALTD_donor.csv', header = TRUE)
+dINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_INT_donor.csv', header = TRUE)
+aINT = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_INT_acceptor.csv', header = TRUE)
+dEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_EXsk_donor.csv', header = TRUE)
+aEX = read.csv('/home/bia/sugarcane_introns_local/data/maize/generated/features_grapple_din//ALL_2017v31_maize_EXsk_acceptor.csv', header = TRUE)
 
+###############################################################################
+### IN CASE chr class IN DF, CHANGE IT TO FACTOR USING THE FOLLOWING LINES ###
+#
+dCS$label = as.factor(dCS$label) 
+aCS$label = as.factor(aCS$label) 
+#ALTA$label = as.factor(ALTA$label) 
+ALTD$label = as.factor(ALTD$label) 
+dINT$label = as.factor(dINT$label) 
+aINT$label = as.factor(aINT$label) 
+dEX$label = as.factor(dEX$label) 
+aEX$label = as.factor(aEX$label) 
 
 
 sample_size_CS = 3000 # Change for the sample size you want
 sample_size = 1000
-set.seed(30)
 
 library(dplyr)
 

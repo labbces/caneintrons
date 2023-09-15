@@ -48,14 +48,31 @@ INT_donor_porcent = prop.table(table(INT_donor$deltaG)) * 100
 dados_hist_INT_donor = data.frame(delta_g = as.numeric(names(INT_donor_porcent)), INT_donor_porcent)
 ggplot() +
   geom_bar(data = dados_hist_CS_donor, aes(x = delta_g, y = CS_donor_porcent, fill = "Doador Constitutivo"), stat = "identity", color = "royalblue") +
-  geom_bar(data = dados_hist_INT_donor, aes(x = delta_g, y = INT_donor_porcent, fill = "INT Doador"), stat = "identity", color = "pink") +
+  geom_bar(data = dados_hist_INT_donor, aes(x = delta_g, y = INT_donor_porcent, fill = "INT Doador"), stat = "identity", color = "lightpink2") +
   labs(title = "Humano HG18 - Doador Constitutivo vs INT Doador",
        x = "Valor do (kcal/mol)",
        y = "Porcentagem de Ocorrência",
        fill = "Evento") +
   xlim(-100, 5) +
   ylim(0,0.5) +
-  scale_fill_manual(values = c("Doador Constitutivo" = "royalblue", "INT Doador" = "pink"))
+  scale_fill_manual(values = c("Doador Constitutivo" = "royalblue", "INT Doador" = "lightpink2"))
+
+
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTD, aes(x = delta_g, y = ALTD_porcent, fill = "ALTD"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_donor, aes(x = delta_g, y = EX_donor_porcent, fill = "EX Doador"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Humano HG18 - ALTD vs EX Doador",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.5) +
+  scale_fill_manual(values = c("ALTD" = "darkseagreen3", "EX Doador" = "palevioletred1"))
+
+
+
+
 
 
 CS_donor$origem = "CS"
@@ -131,6 +148,17 @@ ggplot(data = combined_data, aes(x = origem, y = deltaG, fill=origem)) +
   scale_x_discrete(limits = c("CS", "ALTA", "EX", "INT")) +
   ylim(-100, 0) + coord_flip() +
   geom_hline(yintercept = median(CS_acceptor$deltaG), linetype = "dashed", color = "red") + ggtitle("Human HG18 - Aceitador") + xlab("Evento") + ylab("kcal/mol") + stat_summary(fun.y=mean, geom="point", shape=20, size=2, color="red", fill="red")
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTA, aes(x = delta_g, y = ALTA_porcent, fill = "ALTA"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_acceptor, aes(x = delta_g, y = EX_acceptor_porcent, fill = "EX Acceptor"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Humano HG18 - ALTA vs EX Acceptor",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.5) +
+  scale_fill_manual(values = c("ALTA" = "darkseagreen3", "EX Acceptor" = "palevioletred1"))
 
 
 ################## HUMAN HG38 ################
@@ -264,6 +292,34 @@ ggplot(data = combined_data, aes(x = origem, y = deltaG, fill=origem)) +
   scale_x_discrete(limits = c("CS", "ALTA", "EX", "INT")) +
   ylim(-100, 0) + coord_flip() +
   geom_hline(yintercept = median(CS_acceptor$deltaG), linetype = "dashed", color = "red") + ggtitle("Human HG38 - Aceitador") + xlab("Evento") + ylab("kcal/mol") + stat_summary(fun.y=mean, geom="point", shape=20, size=2, color="red", fill="red")
+
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTD, aes(x = delta_g, y = ALTD_porcent, fill = "ALTD"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_donor, aes(x = delta_g, y = EX_donor_porcent, fill = "EX Doador"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Humano HG38 - ALTD vs EX Doador",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.5) +
+  scale_fill_manual(values = c("ALTD" = "darkseagreen3", "EX Doador" = "palevioletred1"))
+
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTA, aes(x = delta_g, y = ALTA_porcent, fill = "ALTA"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_acceptor, aes(x = delta_g, y = EX_acceptor_porcent, fill = "EX Acceptor"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Humano HG38 - ALTA vs EX Acceptor",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.5) +
+  scale_fill_manual(values = c("ALTA" = "darkseagreen3", "EX Acceptor" = "palevioletred1"))
+
+
+
+
 #
 #
 #
@@ -426,6 +482,33 @@ ggplot(data = combined_data, aes(x = origem, y = deltaG, fill=origem)) +
   ggtitle("Arabidopsis - Aceitador") + xlab("Evento") + ylab("kcal/mol") +
   scale_fill_manual(values= c("CS"="#88d4e5", "EX" = "#fdb827ff", "ALTA" = "#fdb827ff",  "INT" = "#fdb827ff"))
 
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTD, aes(x = delta_g, y = ALTD_porcent, fill = "ALTD"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_donor, aes(x = delta_g, y = EX_donor_porcent, fill = "EX Doador"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Arabidopsis - ALTD vs EX Doador",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,1) +
+  scale_fill_manual(values = c("ALTD" = "darkseagreen3", "EX Doador" = "palevioletred1"))
+
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTA, aes(x = delta_g, y = ALTA_porcent, fill = "ALTA"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_acceptor, aes(x = delta_g, y = EX_acceptor_porcent, fill = "EX Acceptor"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Arabidopsis - ALTA vs EX Acceptor",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,1) +
+  scale_fill_manual(values = c("ALTA" = "darkseagreen3", "EX Acceptor" = "palevioletred1"))
+
+
+
+
 #
 #
 #
@@ -556,4 +639,27 @@ ggplot(data = combined_data, aes(x = origem, y = deltaG, fill=origem)) +
   ylim(-100, 0) + coord_flip() +
   geom_hline(yintercept = median(CS_acceptor$deltaG), linetype = "dashed", color = "red") + ggtitle("Milho -  Aceitador") + xlab("Evento") + ylab("kcal/mol") + stat_summary(fun.y=mean, geom="point", shape=20, size=2, color="red", fill="red")
 #
+ggplot() +
+  geom_bar(data = dados_hist_ALTD, aes(x = delta_g, y = ALTD_porcent, fill = "ALTD"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_donor, aes(x = delta_g, y = EX_donor_porcent, fill = "EX Doador"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Maize - ALTD vs EX Doador",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.8) +
+  scale_fill_manual(values = c("ALTD" = "darkseagreen3", "EX Doador" = "palevioletred1"))
+
+
+ggplot() +
+  geom_bar(data = dados_hist_ALTA, aes(x = delta_g, y = ALTA_porcent, fill = "ALTA"), stat = "identity", alpha = 0.5, color = "darkseagreen3") +
+  geom_bar(data = dados_hist_EX_acceptor, aes(x = delta_g, y = EX_acceptor_porcent, fill = "EX Acceptor"), stat = "identity", alpha = 0.1, color = "palevioletred1") +
+  labs(title = "Maize - ALTA vs EX Acceptor",
+       x = "Valor do (kcal/mol)",
+       y = "Porcentagem de Ocorrência",
+       fill = "Evento") +
+  xlim(-100, 5) +
+  ylim(0,0.8) +
+  scale_fill_manual(values = c("ALTA" = "darkseagreen3", "EX Acceptor" = "palevioletred1"))
+
 

@@ -1,7 +1,7 @@
 library(ggplot2)
 
 # Dados de exemplo
-genomas <- c("Athaliana", "Human hg18", "Human hg38", "Maize")
+genomas <- c("Arabidopsis", "Human hg18", "Human hg38", "Maize")
 CS <- c(29886,9043, 128437, 4410)
 ALTA <- c(85049,3634,11729,24748)
 ALTD <- c(43643,5332,19849,17871)
