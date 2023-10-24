@@ -4,6 +4,11 @@
 # It extracts introns/splice sites flanking reagions based on IMEter, spliceator and splice2deep requirements
 # intron size is between 100-150bp
 
+from Bio import SeqIO
+from Bio.Seq import Seq
+import pyranges as pr
+import argparse
+import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--gtf_input", type=str, required=True)
@@ -31,6 +36,10 @@ contig_table = args.contig_table
 contig_table_pd = pd.read_csv(contig_table, header=None)
 contig_lengths = dict(zip(contig_table_pd[0], contig_table_pd[1]))
 
+filename = args.output
+filename_donor = filename + "_donor"
+filename_acceptor = filename + "_acceptor"
+
 gtf = pr.read_gtf(args.gtf_input)
 
 flanking_size_dict = {'IMEter': 0, 'spliceator': 200, 'splice2deep': 300}
@@ -46,9 +55,6 @@ introns = (introns[(introns.End - introns.Start) > 99])
 introns = (introns[(introns.End - introns.Start) < 151])
 # print(introns)
 
-filename = args.output
-filename_donor = filename + "_donor"
-filename_acceptor = filename + "_acceptor"
 
 trimming_type = args.trimming_type
 

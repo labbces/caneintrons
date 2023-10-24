@@ -1,5 +1,10 @@
-#file = "/home/bia/sugarcane_introns_local/data/RNAseq_output/CTBE_SJ_comSRR.out.tab"
-file = "/home/bia/sugarcane_introns_local/data/RNAseq_output/Souza_SJ_comSRR.out.tab"
+import pandas as pd
+file = "/home/bia/sugarcane_introns_local/data/RNAseq_output/CTBE_SJ_comSRR.out.tab"
+#file = "/home/bia/sugarcane_introns_local/data/RNAseq_output/Souza_SJ_comSRR.out.tab"
+
+output = "/home/bia/sugarcane_introns_local/data/newIntrons/CTBE_NewIntrons_STAR"
+#output = "/home/bia/sugarcane_introns_local/data/newIntrons/Souza_NewIntrons_STAR"
+
 
 # STAR output dict
 full_data = {}
@@ -21,6 +26,7 @@ with open(file, 'r') as files:
         # noted, un_map, multi_map, overhang, srr)
         # Filtra pelo tamanho
         if strand != 0:  # remove undefined strands
+            # apenas introns com tamanho apropriado
             if ((int(end) - int(start)) + 1) >= 100 and ((int(end) - int(start)) + 1) <= 150:
                 # filtra para ficar apenas com introns não anotados
                 if noted == 1:
@@ -140,21 +146,33 @@ with open(file, 'r') as files:
                                     full_data[chr][start][end] = {}
                                     full_data[chr][start][end][strand] = [
                                         un_map, multi_map, (int(un_map)+int(multi_map))]
-total_introns = 0
+
+
+'''total_introns = 0
 for chr in full_data.keys():
     # print(len(full_data))  # quantidade de chromosomos/leituras
     # print(len(full_data[chr]))  # quantidade de starts
     for start in full_data[chr].keys():
         for end in full_data[chr][start].keys():
-            total_introns += len(full_data[chr][start][end].keys())
-# print(total_introns)
+            for strand in full_data[chr][start][end].keys():
+                if full_data[chr][start][end][strand][2] >= 62:
+                    total_introns += 1
+print(total_introns)'''
+
 
 strand_db = {1: "+", 2: "-"}
-print('contig,start,end,strand,uniquely_mapped,multi_mapped,mapped_sum')
-for id in full_data.keys():
-    for start in full_data[id].keys():
-        for end in full_data[id][start].keys():
-            for strand, data in full_data[id][start][end].items():
-                strand = strand_db[strand]
-                print(id, start, end, strand, ",".join(
-                    map(str, data)), sep=",")
+with open(f'{output}_nonFiltered.csv', 'w') as out:
+    out.write('contig,start,end,strand,uniquely_mapped,multi_mapped,mapped_sum\n')
+    for id in full_data.keys():
+        for start in full_data[id].keys():
+            for end in full_data[id][start].keys():
+                for strand, data in full_data[id][start][end].items():
+                    strand = strand_db[strand]
+                    datas = list(map(str, data))
+                    datass = [str(item) for item in datas]
+                    datas = ','.join(datass)
+                    out.write(f'{id},{start},{end},{strand},{datas}\n')
+
+df = pd.read_csv(f'{output}_nonFiltered.csv')
+df = df[df['mapped_sum'] >= 62]
+df.to_csv(f"{output}_filtered.csv", index=False)

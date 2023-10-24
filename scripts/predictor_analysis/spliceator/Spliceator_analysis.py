@@ -22,8 +22,8 @@ import logomaker
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--spliceator_file", type=str, required=True,
                     help='(Path to) Output from spliceator prediction')
-parser.add_argument("-n", "--spliceator_file_neg", type=str, required=True,
-                    help='(Path to) Output from spliceator prediction')
+# parser.add_argument("-n", "--spliceator_file_neg", type=str, required=False,
+#                    help='(Path to) Output from spliceator prediction')
 # parser.add_argument("-t", "--ss_table", type=str, required=True,
 #                    help='(Path to) table with strand information in tsv\
 #                         format. Ex: -\tevm.TU.SCSP803280_000095463.2')
@@ -32,14 +32,14 @@ parser.add_argument("-c", "--contig_table", type=str, required=True,
                         csv format. Ex: JXQF01000001.1,26708')
 parser.add_argument("-e", "--extra", type=int, required=True,
                     help='Extra amount of nucleotides upstream/downstream \
-                        intron donor splice site (e.g. 200, 50, ..)')
+                        intron donor splice site (e.g. 200, 50, ..)', default=200)
 parser.add_argument("-d", "--plots_filename", type=str, required=True,
                     help='Filename of intron distribuition per gene histogram')
 args = parser.parse_args()
 
 # Loading initial data and defining variables
 spliceator_f = args.spliceator_file
-spliceator_n = args.spliceator_file_neg
+# spliceator_n = args.spliceator_file_neg
 
 extra = args.extra
 extra_up = extra - 5  # For 200 extra nucleotides, extra_up is 195
@@ -62,12 +62,13 @@ contig_dict = dict(zip(contig_table_pd[0], contig_table_pd[1]))
 
 distance = {'Donor': {}, 'Acceptor': {}}
 
+
 def good_intron_info(seq, gene_ID, ss_type, intron_ID, pos_esperada, pos):
     if gene_ID not in good_introns.keys():
         good_introns[gene_ID] = {}
     if intron_ID not in good_introns[gene_ID].keys():
         good_introns[gene_ID][intron_ID] = {'Donor': '', 'Acceptor': ''}
-    
+
     pos_esperada = int(pos_esperada)
     pos = int(pos)
 
@@ -81,19 +82,15 @@ def good_intron_info(seq, gene_ID, ss_type, intron_ID, pos_esperada, pos):
             good_introns[gene_ID][intron_ID][ss_type] = seq
             distance[ss_type][intron_ID] = abs(pos_esperada - pos)
             # print(f'{intron_ID} = {distance[ss_type][intron_ID]}')
-    
-    
-
 
     if ss_type == "Donor":
         ss_type == 'Acceptor'
     elif ss_type == 'Acceptor':
         ss_type = 'Donor'
-    
+
     if good_introns[gene_ID][intron_ID][ss_type] == []:
-         good_introns[gene_ID][intron_ID][ss_type].append(good_donors[intron_ID])
-
-
+         good_introns[gene_ID][intron_ID][ss_type].append(
+             good_donors[intron_ID])
 
 
 # Answering 4 objectives
@@ -107,7 +104,7 @@ for filename in glob.glob(spliceator_f):
                 fields = line.split(';')
                 try:
                     SS_type = fields[2]
-                except: # noqa: E722 E261
+                except:  # noqa: E722 E261
                     continue
                     # print(fields)
                     # print(line)
@@ -151,21 +148,6 @@ for filename in glob.glob(spliceator_f):
                     intron_containing_seqLength = upstream + \
                         ((intron_end - intron_start) + 1) + downstream
 
-    # filtering introns by splice sites position (getting intron in right
-    # positions)
-    # and getting good introns (objective 2)
-    #
-    # Basic workfow:
-    # 1) separate by sequence strend (to analyze if the splice site
-    #    is in the correct position)
-    # 2) separate by splice site type (e.g. donor or acceptor) to
-    #    get intron with both predicted
-    # 3) check if splice site position is correct
-    #    3.1) for non-border introns (start coord > extra)
-    #    3.2) for border introns
-    # 4) correct sites are added to good donor/acceptors
-    # 5) if a good donor/acceptor is in good acceptor/donnor it is added to good introns
-
                     if SS_type == "Donor":
                         resume['pos']["don"] += 1
                         sense_sting_pos['don'].append(int(position))
@@ -173,7 +155,8 @@ for filename in glob.glob(spliceator_f):
                             if extra_up < int(position) < extra_down:
                                 good_donors[ID] = seq
                                 if ID in good_acceptors:
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos = position, pos_esperada=extra)
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos=position, pos_esperada=extra)
                                     # good_introns[ID] = 1
                         else:  # <= border-introns
                             if (intron_start - 5) < int(position) < (intron_start + 5):
@@ -184,7 +167,8 @@ for filename in glob.glob(spliceator_f):
                                 # good_donor = [gene][ID] = 1
                                 # len(good_intron[gene])(len good_donor[gene] + len good_acceptor[gene]) = genes com bas introns
                                 if ID in good_acceptors:
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos = position, pos_esperada=intron_start)
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos=position, pos_esperada=intron_start)
 
                                     # good_introns[ID] = 1
 
@@ -195,7 +179,8 @@ for filename in glob.glob(spliceator_f):
                             if (intron_containing_seqLength - extra_up) > int(position) > (intron_containing_seqLength - extra_down):
                                 good_acceptors[ID] = seq
                                 if ID in good_donors:
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos = position, pos_esperada=extra)
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos=position, pos_esperada=extra)
 
                                     # good_introns[ID] = 1
                         else:  # border introns
@@ -203,37 +188,10 @@ for filename in glob.glob(spliceator_f):
                                 good_acceptors[ID] = seq
                                 if ID in good_donors:
                                     k = (contig_dict[contig]) - intron_end
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos = position, pos_esperada=k)
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos=position, pos_esperada=k)
 
                                     # good_introns[ID] = 1
-
-
-for filename in glob.glob(spliceator_n):
-    with open(os.path.join(os.getcwd(), filename), 'r') as spliceator:
-        # next(spliceator)  # skip header (e.g. first line)
-        for line in spliceator:
-            if not line.startswith('ID;#'):
-
-                # Getting introns features from spliceator file
-                fields = line.split(';')  # all features
-                SS_type = fields[2]  # Donor or acceptor
-                seq = fields[3]
-                position = fields[4]
-                ID = fields[0]
-
-# Getting introns features from spliceator ID report
-                # m = re.match(r'([A-Za0-9.]*)\.([0-9]*)-([0-9]*)\
-                # -([\+\-])-(.*)', ID)
-                m = re.match(
-                    r'([A-Za-z_.a0-9._]*)\.([0-9]*)-([0-9]*)-([\+\-])-(.*)', ID)
-
-                contig = m.group(1)
-                intron_start = int(m.group(2))
-                intron_end = int(m.group(3))
-                strand = str((m.group(4)))
-                gene_ID = m.group(5)
-                # gene_ID = m.group(5)
-                # strand = ss_dict[gene_ID]
 
                 if strand == "-":
 
@@ -264,18 +222,18 @@ for filename in glob.glob(spliceator_n):
                             if (extra_up) < int(position) < (extra_down):
                                 good_donors[ID] = seq
                                 if ID in good_acceptors:
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos = position, pos_esperada=extra)
-
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos=position, pos_esperada=extra)
 
                                     # good_introns[ID] = 1
                         else:  # border intron
                             if (contig_dict[contig] - (intron_end)) < int(position) < (contig_dict[contig] - (intron_end)):
                                 good_donors[ID] = seq
                                 if ID in good_acceptors:
-                                    k = (contig_dict[contig]) - intron_end      
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos = position, pos_esperada=k)
+                                    k = (contig_dict[contig]) - intron_end
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Donor", intron_ID=ID, pos=position, pos_esperada=k)
 
-                                    # good_introns[ID] = 1
                     if SS_type == "Acceptor":
                         resume['neg']["acce"] += 1
                         sense_sting_neg['acce'].append(int(position))
@@ -283,18 +241,19 @@ for filename in glob.glob(spliceator_n):
                             if ((intron_containing_seqLength - extra_up)) >= int(position) >= ((intron_containing_seqLength - extra_down)):
                                 good_acceptors[ID] = seq
                                 if ID in good_donors:
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos = position, pos_esperada=extra)
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos=position, pos_esperada=extra)
 
                         else:  # border intron
                             if (intron_start) < int(position) < (intron_start):
                                 good_acceptors[ID] = seq
                                 if ID in good_donors:
                                     # print('I have a pair!')
-                                    good_intron_info(seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos = position, pos_esperada=intron_start)
-
+                                    good_intron_info(
+                                        seq=seq, gene_ID=gene_ID, ss_type="Acceptor", intron_ID=ID, pos=position, pos_esperada=intron_start)
 
                                     # good_introns[ID] = 1
-
+'''
 # print(good_acceptors)
 # print(good_donors)
 # print(len(good_introns))
@@ -320,7 +279,7 @@ with open(donor_file, 'w') as file_donor:
                 file_acceptor.write(f'\n{sequence_a}\n')
                 file_donor.write(full_header)
                 file_donor.write(f'\n{sequence_d}\n')
-                
+
                 if full_header in introns_headers:
                     print(full_header)
                 else:
@@ -328,7 +287,7 @@ with open(donor_file, 'w') as file_donor:
 
 print(good_introns)
 
-'''# Displaying results
+'''  # Displaying results
 # getting good introns amount
 introns_count = 0
 for gene in good_introns.values():
