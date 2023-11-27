@@ -71,60 +71,59 @@ with open(f'{filename}_intron.fa', 'w') as intron_file:
         # id_full_acceptor = f'>{seq_id}.{Start}-{End}-{strand}-{gene_id}-acceptor'
 
         if trimming_type == "splice2deep":
-            with open(f'{filename_donor}_intron.fa', 'w') as donor_intron_file:
-                with open(f'{filename_acceptor}_intron.fa', 'w') as acceptor_intron_file:
-                    if args.flanking_size is not None:
-                        flanking_size = args.flanking_size
+            with open(f'{filename_donor}_intron.fa', 'a') as donor_intron_file, open(f'{filename_acceptor}_intron.fa', 'a') as acceptor_intron_file:
+                if args.flanking_size is not None:
+                    flanking_size = args.flanking_size
+                else:
+                    flanking_size = flanking_size_dict[trimming_type]
+
+                # start = Start - 300
+                donor_start = Start - flanking_size
+                acceptor_start = End - flanking_size + 2
+
+                # end = End + 300
+                donor_end = Start + flanking_size + 2
+                acceptor_end = End + flanking_size
+
+                if donor_start <= 0 or acceptor_start <= 0:
+                    # start = 1
+                    print(
+                        f'Short start border on {id_full} {Start} {End} {contig_lengths[seq_id]}')
+                else:
+                    if acceptor_end >= contig_lengths[seq_id] or donor_end >= contig_lengths[seq_id]:
+                        # end = contig_lengths[seq_id]
+                        print(f'Short end border on {id_full}')
                     else:
-                        flanking_size = flanking_size_dict[trimming_type]
+                        # intron_seq = seq_full[start:end]
+                        # donor_seq = seq_full[donor_start:donor_end]
+                        # acceptor_seq = seq_full[acceptor_start:acceptor_end]
 
-                    # start = Start - 300
-                    donor_start = Start - flanking_size
-                    acceptor_start = End - flanking_size + 2
-
-                    # end = End + 300
-                    donor_end = Start + flanking_size + 2
-                    acceptor_end = End + flanking_size
-
-                    if donor_start <= 0 or acceptor_start <= 0:
-                        # start = 1
-                        print(
-                            f'Short start border on {id_full} {Start} {End} {contig_lengths[seq_id]}')
-                    else:
-                        if acceptor_end >= contig_lengths[seq_id] or donor_end >= contig_lengths[seq_id]:
-                            # end = contig_lengths[seq_id]
-                            print(f'Short end border on {id_full}')
+                        if strand == "+":
+                            #intron_seq = intron_seq
+                            donor_seq = seq_full[donor_start:donor_end].upper(
+                            )
+                            acceptor_seq = seq_full[acceptor_start:acceptor_end].upper(
+                            )
+                        elif strand == "-":
+                            acceptor_seq = seq_full[donor_start:donor_end].upper(
+                            )
+                            donor_seq = seq_full[acceptor_start:acceptor_end].upper(
+                            )
+                            donor_seq = Seq(donor_seq)
+                            donor_seq = donor_seq.reverse_complement()
+                            acceptor_seq = Seq(acceptor_seq)
+                            acceptor_seq = acceptor_seq.reverse_complement()
                         else:
-                            # intron_seq = seq_full[start:end]
-                            # donor_seq = seq_full[donor_start:donor_end]
-                            # acceptor_seq = seq_full[acceptor_start:acceptor_end]
-
-                            if strand == "+":
-                                #intron_seq = intron_seq
-                                donor_seq = seq_full[donor_start:donor_end].upper(
-                                )
-                                acceptor_seq = seq_full[acceptor_start:acceptor_end].upper(
-                                )
-                            elif strand == "-":
-                                acceptor_seq = seq_full[donor_start:donor_end].upper(
-                                )
-                                donor_seq = seq_full[acceptor_start:acceptor_end].upper(
-                                )
-                                donor_seq = Seq(donor_seq)
-                                donor_seq = donor_seq.reverse_complement()
-                                acceptor_seq = Seq(acceptor_seq)
-                                acceptor_seq = acceptor_seq.reverse_complement()
-                            else:
-                                print(
-                                    f'Strand {strand} is not + or - (gene {gene_id} and\
+                            print(
+                                f'Strand {strand} is not + or - (gene {gene_id} and\
                                         seq_id {seq_id}')
 
-                            donor_intron_file.write(f'{id_full}\n')
-                            donor_intron_file.write(f'{donor_seq}\n')
+                        donor_intron_file.write(f'{id_full}\n')
+                        donor_intron_file.write(f'{donor_seq}\n')
 
-                            acceptor_intron_file.write(f'{id_full}\n')
-                            acceptor_intron_file.write(f'{acceptor_seq}\n')
-                            #print(f"\n{id_full} \n{donor_seq}\n{acceptor_seq}\n")
+                        acceptor_intron_file.write(f'{id_full}\n')
+                        acceptor_intron_file.write(f'{acceptor_seq}\n')
+                        #print(f"\n{id_full} \n{donor_seq}\n{acceptor_seq}\n")
         elif trimming_type == "IMEter":
             # start = Start - 300
 

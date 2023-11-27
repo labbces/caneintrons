@@ -86,3 +86,4 @@ df['s'] = (df['IMEter_Sbicolor_V2_normalized'] * 0.325) + (df['STAR_normalized']
 df = df.sort_values('s', ascending=False)
 df = df.reset_index(drop=True)
 df.to_csv('output_file.csv', index=True)
+h
