@@ -1,18 +1,36 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib_venn import venn2_unweighted
+import pyranges as pr
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--fasta_file", type=str, required=True,
+                    help="Donor or Acceptor splice2deep fasta file to get sequence headers")
+parser.add_argument("-a", "--out_donor_at", type=str, required=True,
+                    help="Splice2deep output - donor sequence calculated with Athaliana model. Ex: splicedeep_DoSS_output_Souza_at.splice2deep")
+parser.add_argument("-b", "--out_acceptor_at", type=str, required=True,
+                    help="Splice2deep output - acceptor sequence calculated with Athaliana model. Ex: splicedeep_AcSS_output_Souza_at.splice2deep")
+parser.add_argument("-x", "--out_donor_or", type=str, required=True,
+                    help="Splice2deep output - donor sequence calculated with Osativa model. Ex: splicedeep_DoSS_output_Souza_oriza.splice2deep")
+parser.add_argument("-z", "--out_acceptor_or", type=str, required=True,
+                    help="Splice2deep output - acceptor sequence calculated with Osativa model. Ex: splicedeep_AcSS_output_Souza_oriza.splice2deep")
+parser.add_argument("-o", "--output", type=str, required=True,
+                    help="For -o as 'abc' out file would be abc_s2dAnalysis.csv")
+args = parser.parse_args()
 
 
-headers = pd.read_csv(
-    '/home/bia/sugarcane_introns_local/data/newIntrons/fastas/Souza_newIntrons_Splice2Deep_acceptor_intron.fa', header=None)
-donor_at = pd.read_csv(
-    '/home/bia/sugarcane_introns_local/data/newIntrons/s2d_output/splicedeep_DoSS_output_Souza_at.splice2deep', header=None)
-acceptor_at = pd.read_csv(
-    '/home/bia/sugarcane_introns_local/data/newIntrons/s2d_output/splicedeep_AcSS_output_Souza_at.splice2deep', header=None)
-donor_or = pd.read_csv(
-    '/home/bia/sugarcane_introns_local/data/newIntrons/s2d_output/splicedeep_DoSS_output_Souza_oriza.splice2deep', header=None)
-acceptor_or = pd.read_csv(
-    '/home/bia/sugarcane_introns_local/data/newIntrons/s2d_output/splicedeep_AcSS_output_Souza_oriza.splice2deep', header=None)
+fasta_file = args.fasta_file
+at_donor = args.out_donor_at
+at_acceptor = args.out_acceptor_at
+or_donor = args.out_donor_or
+or_acceptor = args.out_acceptor_or
+
+headers = pd.read_csv(fasta_file, header=None)
+donor_at = pd.read_csv(at_donor, header=None)
+acceptor_at = pd.read_csv(at_acceptor, header=None)
+donor_or = pd.read_csv(or_donor, header=None)
+acceptor_or = pd.read_csv(or_acceptor, header=None)
 
 headers = headers[headers.iloc[:, 0].str.startswith('>')]
 headers = headers.reset_index(drop=True)
@@ -43,19 +61,19 @@ print(good_introns)
 print(good_at)
 print(good_oriza)
 
+
+filename = args.output
+filename = f'{filename}_s2dAnalysis.csv'
 ga = good_at.shape[0] - good_good.shape[0]
 go = good_oriza.shape[0] - good_good.shape[0]
 int = good_good.shape[0]
-good_introns.to_csv('Souza_newIntrons_s2dAnalysis.csv',
+good_introns.to_csv(filename,
                     index=False, header=True, sep='\t')
 v = venn2_unweighted(subsets=(go, ga, int),
                      set_labels=('Oriza', 'Arabidopsis'))
 v.get_patch_by_id('10').set_color('blue')  # Conjunto A
 v.get_patch_by_id('01').set_color('pink')  # Conjunto B
 v.get_patch_by_id('11').set_color('purple')
-# Adicione um título
-plt.title("Souza")
-
 # Exiba o gráfico
 plt.show()
 
