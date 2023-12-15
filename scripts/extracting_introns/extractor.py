@@ -102,6 +102,7 @@ with open(f'{filename}_intron.fa', 'w') as intron_file:
                             #intron_seq = intron_seq
                             donor_seq = seq_full[donor_start:donor_end].upper(
                             )
+                            acceptor_start = acceptor_start - 4
                             acceptor_seq = seq_full[acceptor_start:acceptor_end].upper(
                             )
                         elif strand == "-":
